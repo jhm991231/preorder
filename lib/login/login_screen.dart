@@ -175,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         return;
                       }
                       if (context.mounted) {
-                        context.go("/");
+                        context.go("/home");
                       }
                     },
                     child: Image.asset("assets/btn_google_signin.png")),
