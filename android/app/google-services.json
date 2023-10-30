@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "676616876310",
+    "firebase_url": "https://preorder-d773a-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "preorder-d773a",
+    "storage_bucket": "preorder-d773a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:676616876310:android:384feb8e78c3b601cbe037",
+        "android_client_info": {
+          "package_name": "com.preorder.preorder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "676616876310-025tqpmhia67aukdnta7vbg0afnjhi09.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZIfqFIQcHbdBoNvvEMYlcAYS-pfO-MiA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "676616876310-025tqpmhia67aukdnta7vbg0afnjhi09.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
