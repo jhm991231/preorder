@@ -29,7 +29,6 @@ class _LoginScreenState extends State<LoginScreen> {
       if (e.code == "user-not-found") {
         print(e.toString());
       } else if (e.code == "wrong-password") {
-
         print(e.toString());
       }
     } catch (e) {
@@ -37,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<UserCredential?> signInWithGoogle() async{
+  Future<UserCredential?> signInWithGoogle() async {
     // 1. googleauth로 로그인해 accessToken & idToken 받아오기
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     final GoogleSignInAuthentication? googleAuth =
@@ -53,7 +52,6 @@ class _LoginScreenState extends State<LoginScreen> {
     // 즉, gooleAuth를 통해 token들 가져와서 firebase에 넣는다
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -131,17 +129,22 @@ class _LoginScreenState extends State<LoginScreen> {
                             pwdTextController.text.trim());
 
                         if (result == null) {
-                          if(context.mounted) {
+                          if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text("로그인 실패"),
+                                content: Center(child: Text("로그인 실패")),
                               ),
                             );
                           }
                           return;
                         }
                         // 로그인 및 검증 성공
-                        if(context.mounted) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Center(child: Text("환영합니다")),
+                            ),
+                          );
                           context.go("/home");
                         }
                       }
@@ -160,21 +163,24 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 TextButton(
                   onPressed: () => context.push("/sign_up"),
-                  /*onPressed: () {
-                    GoRouter.of(context).push("/sign_up");
-                  },*/
                   child: const Text("계정이 없나요? 회원가입"),
                 ),
                 const Divider(),
                 InkWell(
-                    onTap: () async{
+                    onTap: () async {
                       final userCredit = await signInWithGoogle();
 
-                      if (userCredit == null){
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("로그인 실패")));
+                      if (userCredit == null) {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(SnackBar(content: Center(child: Text("로그인 실패"))));
                         return;
                       }
                       if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Center(child: Text("환영합니다")),
+                          ),
+                        );
                         context.go("/home");
                       }
                     },
