@@ -19,6 +19,7 @@ class _OptionScreenState extends State<OptionScreen> {
   late Stream<QuerySnapshot<Map<String, dynamic>>> optionStream;
   Map<String, bool> optionCheckStatus = {};
   int selectedOptionPrice = 0;
+  int quantity = 1;
 
   @override
   void initState() {
@@ -36,11 +37,25 @@ class _OptionScreenState extends State<OptionScreen> {
     });
   }
 
+  void increaseQuantity() {
+    setState(() {
+      quantity++;
+    });
+  }
+
+  void decreaseQuantity() {
+    if (quantity > 1 ) {
+      setState(() {
+        quantity--;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     int price = int.parse(widget.menu['price'].replaceAll(',', '').replaceAll('원', ''));
 
+    int totalPrice = (price + selectedOptionPrice) * quantity;
 
     return Scaffold(
       appBar: AppBar(
@@ -76,43 +91,72 @@ class _OptionScreenState extends State<OptionScreen> {
               const Text('옵션 선택', style: TextStyle(fontSize: 20),),
               const SizedBox(height: 20),
               // 간격 추가
-              Expanded(
-                child: ListView.builder(
-                  itemCount: optionDocs.length,
-                  itemBuilder: (context, index) {
-                    Map<String, dynamic> optionData = optionDocs[index]
-                        .data() as Map<String, dynamic>;
-                    bool isChecked = optionCheckStatus[optionData['옵션명']] ?? false;
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: optionDocs.length,
+                itemBuilder: (context, index) {
+                  Map<String, dynamic> optionData = optionDocs[index]
+                      .data() as Map<String, dynamic>;
+                  bool isChecked = optionCheckStatus[optionData['옵션명']] ?? false;
 
-                    return ListTile(
-                      title: Text(optionData['옵션명'], style: const TextStyle(
-                          fontSize: 16),),
-                      trailing: Text("${optionData['가격']}원", style: const TextStyle(
-                          fontSize: 16),),
-                      leading: Checkbox(
-                        value: isChecked,
-                        onChanged: (bool? value) {
-                          print(value);
-                          setState(() {
-                            optionCheckStatus[optionData['옵션명']] = value!;
-                          });
-                          updateSelectedOptionPrice((optionData['가격']), value!);
-                        },
-                      ),
-                    );
-                  },
-                ),
+                  return ListTile(
+                    title: Text(optionData['옵션명'], style: const TextStyle(
+                        fontSize: 16),),
+                    trailing: Text("${optionData['가격']}원", style: const TextStyle(
+                        fontSize: 16),),
+                    leading: Checkbox(
+                      value: isChecked,
+                      onChanged: (bool? value) {
+                        print(value);
+                        setState(() {
+                          optionCheckStatus[optionData['옵션명']] = value!;
+                        });
+                        updateSelectedOptionPrice((optionData['가격']), value!);
+                      },
+                    ),
+                  );
+                },
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 30),
+                    child: Text('수량', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.remove),
+                          onPressed: decreaseQuantity,  // 수량 감소 메서드 호출//
+                        ),
+                        Text("$quantity", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        IconButton(
+                          icon: const Icon(Icons.add),
+                          onPressed: increaseQuantity,  // 수량 증가 메서드 호출
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              Expanded(child: Container()),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('상품금액', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                    const Text('상품금액', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
                     Text(
-                      '${NumberFormat("#,###").format(price + selectedOptionPrice)}원',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      '${NumberFormat("#,###").format(totalPrice)}원',
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
+                    // Text(
+                    //   '${NumberFormat("#,###").format((price + selectedOptionPrice)*quantity)}원',
+                    //   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    // ),
 
                   ],
                 ),
