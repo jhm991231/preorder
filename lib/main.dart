@@ -14,6 +14,8 @@ import 'package:preorder/body/mypage.dart';
 import 'body/home_screen.dart';
 import 'login/sign_up_screen.dart';
 
+UserCredential? userCredential;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -23,8 +25,8 @@ void main() async {
   if (kDebugMode) {
     try {
       //await FirebaseAuth.instance.useAuthEmulator("localhost", 9099);
-      FirebaseFirestore.instance.useFirestoreEmulator("localhost", 8080);
-      FirebaseStorage.instance.useStorageEmulator("localhost", 9199);
+      //FirebaseFirestore.instance.useFirestoreEmulator("localhost", 8080);
+      //FirebaseStorage.instance.useStorageEmulator("localhost", 9199);
     } catch (e) {
       print(e);
     }

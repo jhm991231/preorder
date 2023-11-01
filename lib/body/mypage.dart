@@ -126,8 +126,7 @@ class _MyPageState extends State<MyPage> {
                 child: Text('로그아웃', style: TextStyle(fontSize: 18)),
               ),
               style: ElevatedButton.styleFrom(
-                primary: Color(0x8CE7E7E7), // 버튼 색상
-                onPrimary: Colors.black, //
+                foregroundColor: Colors.black, backgroundColor: Color(0x8CE7E7E7), //
               ),
             ),
           ),
