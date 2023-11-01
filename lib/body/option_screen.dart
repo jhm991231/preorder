@@ -17,6 +17,7 @@ class OptionScreen extends StatefulWidget {
 class _OptionScreenState extends State<OptionScreen> {
   // List<Map<String, dynamic>> options = [];
   late Stream<QuerySnapshot<Map<String, dynamic>>> optionStream;
+  Map<String, bool> optionCheckStatus = {};
   int selectedOptionPrice = 0;
 
   @override
@@ -25,8 +26,7 @@ class _OptionScreenState extends State<OptionScreen> {
     optionStream = FirebaseFirestore.instance.collection('option').snapshots();
   }
 
-  void updateSelectedOptionPrice(String price_str, bool isSelected) {
-    int price = int.parse(price_str);
+  void updateSelectedOptionPrice(int price, bool isSelected) {
     setState(() {
       if (isSelected) {
         selectedOptionPrice += price;
@@ -40,7 +40,6 @@ class _OptionScreenState extends State<OptionScreen> {
   @override
   Widget build(BuildContext context) {
     int price = int.parse(widget.menu['price'].replaceAll(',', '').replaceAll('원', ''));
-    Map<String, bool> optionCheckStatus = {};
 
 
     return Scaffold(
@@ -85,15 +84,15 @@ class _OptionScreenState extends State<OptionScreen> {
                         .data() as Map<String, dynamic>;
                     bool isChecked = optionCheckStatus[optionData['옵션명']] ?? false;
 
-
                     return ListTile(
-                      title: Text(optionData['옵션명'], style: TextStyle(
+                      title: Text(optionData['옵션명'], style: const TextStyle(
                           fontSize: 16),),
-                      trailing: Text("${optionData['가격']}원", style: TextStyle(
+                      trailing: Text("${optionData['가격']}원", style: const TextStyle(
                           fontSize: 16),),
                       leading: Checkbox(
                         value: isChecked,
                         onChanged: (bool? value) {
+                          print(value);
                           setState(() {
                             optionCheckStatus[optionData['옵션명']] = value!;
                           });
@@ -128,42 +127,57 @@ class _OptionScreenState extends State<OptionScreen> {
         child: Row(
           children: [
             Expanded(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    backgroundColor: Color(0x8CE7E7E7),
-                    shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero,
-                  )
-                ),
-                child: Text('장바구니'),
-                onPressed: () {
-                  print("Type of widget.menu['price']: ${widget.menu['price'].runtimeType}");
+              child: GestureDetector(
+                onTap: () {
                   // 장바구니 로직 추가
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Center(child: Text("장바구니에 추가 되었습니다")),
                     ),
                   );
-                  context.push('/home');
-
+                  Navigator.pop(context);
                 },
+                child: Container(
+                  height: 40.0, // 버튼의 높이를 설정합니다.
+                  width: double.infinity, // 버튼의 너비를 화면 전체로 설정합니다.
+                  decoration: BoxDecoration(
+                    color: const Color(0x8CE7E7E7), // 배경색을 설정합니다.
+                    borderRadius: BorderRadius.circular(0), // 모서리를 둥글게 설정합니다.
+                  ),
+                  alignment: Alignment.center, // 내부의 텍스트를 중앙으로 정렬합니다.
+                  child: const Text(
+                    '장바구니',
+                    style: TextStyle(
+                      color: Colors.black, // 텍스트 색상을 검정색으로 설정합니다.
+                      fontSize: 16.0, // 텍스트 크기를 설정합니다.
+                    ),
+                  ),
+                ),
               ),
+
             ),
             SizedBox(width: 10,),
             Expanded(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    backgroundColor: Color(0x8CE7E7E7),
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero,
-                    )
-                ),
-                child: Text('주문하기'),
-                onPressed: () {
-                  //주문 로직 추가
+              child: GestureDetector(
+                onTap: () {
+                  // 주문하기 로직 추가
                 },
+                child: Container(
+                  height: 40.0, // 버튼의 높이를 설정합니다.
+                  width: double.infinity, // 버튼의 너비를 화면 전체로 설정합니다.
+                  decoration: BoxDecoration(
+                    color: const Color(0x8CE7E7E7), // 배경색을 설정합니다.
+                    borderRadius: BorderRadius.circular(0), // 모서리를 둥글게 설정합니다.
+                  ),
+                  alignment: Alignment.center, // 내부의 텍스트를 중앙으로 정렬합니다.
+                  child: const Text(
+                    '주문하기',
+                    style: TextStyle(
+                      color: Colors.black, // 텍스트 색상을 검정색으로 설정합니다.
+                      fontSize: 16.0, // 텍스트 크기를 설정합니다.
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
