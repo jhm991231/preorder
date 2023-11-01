@@ -59,13 +59,13 @@ class _OptionScreenState extends State<OptionScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("옵션 선택 화면"),
+        title: const Text("옵션 선택 화면"),
       ),
       body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: optionStream,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           List<DocumentSnapshot<Map<String, dynamic>>> optionDocs = snapshot
@@ -84,7 +84,7 @@ class _OptionScreenState extends State<OptionScreen> {
               const SizedBox(height: 10),
               // 간격 추가
               Text(widget.menu['name'],
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               // 음료 이름
               const SizedBox(height: 40),
               // 간격 추가
@@ -97,21 +97,21 @@ class _OptionScreenState extends State<OptionScreen> {
                 itemBuilder: (context, index) {
                   Map<String, dynamic> optionData = optionDocs[index]
                       .data() as Map<String, dynamic>;
-                  bool isChecked = optionCheckStatus[optionData['옵션명']] ?? false;
+                  bool isChecked = optionCheckStatus[optionData['optionName']] ?? false;
 
                   return ListTile(
-                    title: Text(optionData['옵션명'], style: const TextStyle(
+                    title: Text(optionData['optionName'], style: const TextStyle(
                         fontSize: 16),),
-                    trailing: Text("${optionData['가격']}원", style: const TextStyle(
+                    trailing: Text("${optionData['optionPrice']}원", style: const TextStyle(
                         fontSize: 16),),
                     leading: Checkbox(
                       value: isChecked,
                       onChanged: (bool? value) {
                         print(value);
                         setState(() {
-                          optionCheckStatus[optionData['옵션명']] = value!;
+                          optionCheckStatus[optionData['optionName']] = value!;
                         });
-                        updateSelectedOptionPrice((optionData['가격']), value!);
+                        updateSelectedOptionPrice((optionData['optionPrice']), value!);
                       },
                     ),
                   );
@@ -185,8 +185,8 @@ class _OptionScreenState extends State<OptionScreen> {
                   height: 40.0, // 버튼의 높이를 설정합니다.
                   width: double.infinity, // 버튼의 너비를 화면 전체로 설정합니다.
                   decoration: BoxDecoration(
-                    color: const Color(0x8CE7E7E7), // 배경색을 설정합니다.
-                    borderRadius: BorderRadius.circular(0), // 모서리를 둥글게 설정합니다.
+                    color: const Color(0x8CC0C0C0), // 배경색을 설정합니다.
+                    borderRadius: BorderRadius.circular(10), // 모서리를 둥글게 설정합니다.
                   ),
                   alignment: Alignment.center, // 내부의 텍스트를 중앙으로 정렬합니다.
                   child: const Text(
@@ -200,7 +200,7 @@ class _OptionScreenState extends State<OptionScreen> {
               ),
 
             ),
-            SizedBox(width: 10,),
+            const SizedBox(width: 10,),
             Expanded(
               child: GestureDetector(
                 onTap: () {
@@ -210,8 +210,8 @@ class _OptionScreenState extends State<OptionScreen> {
                   height: 40.0, // 버튼의 높이를 설정합니다.
                   width: double.infinity, // 버튼의 너비를 화면 전체로 설정합니다.
                   decoration: BoxDecoration(
-                    color: const Color(0x8CE7E7E7), // 배경색을 설정합니다.
-                    borderRadius: BorderRadius.circular(0), // 모서리를 둥글게 설정합니다.
+                    color: const Color(0x8CC0C0C0), // 배경색을 설정합니다.
+                    borderRadius: BorderRadius.circular(10), // 모서리를 둥글게 설정합니다.
                   ),
                   alignment: Alignment.center, // 내부의 텍스트를 중앙으로 정렬합니다.
                   child: const Text(
