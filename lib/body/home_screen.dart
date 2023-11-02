@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import '../data/menu_data.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -10,7 +10,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String selectedCategory = "커피(ICE)";
+  String selectedCategory = "COFFEE(ICE)";
   int _selectedIndex = 0;
 
   void updateCategory(String newCategory) {
@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
             CategoryBar(
               onCategorySelect: updateCategory,
             ),
-            MenuList(menus: menuData[selectedCategory] ?? []),
+            MenuList(selectedCategory: selectedCategory,),
           ],
         ),
         );
@@ -90,15 +90,15 @@ class CategoryBar extends StatefulWidget {
 
 class _CategoryBarState extends State<CategoryBar> {
   final List<String> categories = [
-    "커피(ICE)",
-    "커피(HOT)",
+    "COFFEE(ICE)",
+    "COFFEE(HOT)",
     "BEVERAGE",
-    "FRUIT TEA",
-    "밀크티&버블티",
-    "에이드&주스"
+    "FRUIT TEA & BLENDING TEA",
+    "MILK TEA & BUBBLE TEA",
+    "ADE & ICE TEA"
   ];
 
-  String selectedCategory = "커피(ICE)";
+  String selectedCategory = "COFFEE(ICE)";
 
   @override
   Widget build(BuildContext context) {
@@ -152,10 +152,60 @@ class _CategoryBarState extends State<CategoryBar> {
   }
 }
 
-class MenuList extends StatelessWidget {
-  final List<Map<String, dynamic>> menus;
+class MenuList extends StatefulWidget {
+  final String selectedCategory;
 
-  MenuList({required this.menus});
+  MenuList({Key? key, required this.selectedCategory}) : super(key: key);
+
+  @override
+  _MenuListState createState() => _MenuListState();
+
+
+}
+
+class _MenuListState extends State<MenuList> {
+  List<Map<String, dynamic>> menus = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMenus();
+  }
+
+  @override
+  void didUpdateWidget(covariant MenuList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // selectedCategory가 변경되었을 때 fetchMenus를 다시 호출
+    if (widget.selectedCategory != oldWidget.selectedCategory) {
+      fetchMenus();
+    }
+  }
+
+  Future<void> fetchMenus() async {
+    try {
+      // 'category' 컬렉션에서 선택된 카테고리 문서에 접근
+      var categoryDoc = FirebaseFirestore.instance
+          .collection('category')
+          .doc(widget.selectedCategory);
+
+      // 'drinks' 서브 컬렉션에서 메뉴 데이터 가져오기
+      var querySnapshot = await categoryDoc.collection('drinks').get();
+
+      // Firestore 문서를 Dart 객체로 변환
+      var fetchedMenus = querySnapshot.docs.map((doc) {
+        return doc.data() as Map<String, dynamic>;
+      }).toList();
+
+      // 상태 업데이트
+      setState(() {
+        menus = fetchedMenus;
+      });
+    } catch (e) {
+      print(e);
+      // 오류 처리 (예: 사용자에게 메시지 표시)
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -179,14 +229,14 @@ class MenuList extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      menus[index]["name"],
+                      menus[index]["productName"],
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
                     Text(
-                      menus[index]["price"],
+                      '${menus[index]["productPrice"].toString()}원',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
