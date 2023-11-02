@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -8,7 +9,7 @@ import 'package:intl/intl.dart';
 class OptionScreen extends StatefulWidget {
   final Map<String, dynamic> menu;
 
-  OptionScreen({required this.menu});
+  OptionScreen({super.key, required this.menu});
 
   @override
   State<OptionScreen> createState() => _OptionScreenState();
@@ -20,11 +21,13 @@ class _OptionScreenState extends State<OptionScreen> {
   Map<String, bool> optionCheckStatus = {};
   int selectedOptionPrice = 0;
   int quantity = 1;
+  int productPrice = 0;
 
   @override
   void initState() {
     super.initState();
     optionStream = FirebaseFirestore.instance.collection('option').snapshots();
+    productPrice =  int.parse(widget.menu['price'].replaceAll(',', '').replaceAll('원', ''));
   }
 
   void updateSelectedOptionPrice(int price, bool isSelected) {
@@ -51,11 +54,51 @@ class _OptionScreenState extends State<OptionScreen> {
     }
   }
 
+  Future<void> addToCart() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    List<Map<String, dynamic>> selectedOptions = [];
+    for (var entry in optionCheckStatus.entries) {
+      if (entry.value) {
+        int optionPrice = 0;
+        if (entry.key == "사이즈업") {
+          optionPrice = 300;
+        } else {
+          optionPrice = 500;
+        }
+        selectedOptions.add({
+          'optionName' : entry.key,
+          'optionPrice' : optionPrice,
+        });
+      }
+    }
+
+    //int _productPrice = productPrice;
+    int totalPrice = (productPrice + selectedOptionPrice) * quantity;
+
+    CollectionReference userCart = FirebaseFirestore.instance.collection('users').doc(user!.uid).collection('cart');
+    await userCart.add({
+      'productName': widget.menu['name'],
+      'productPrice': productPrice,
+      'selectedOptions': selectedOptions,
+      'quantity': quantity,
+      'totalPrice': totalPrice,
+      'status': 'IN_CART',
+      'timestamp': FieldValue.serverTimestamp(),
+      'pickupTime': 0,
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('장바구니에 추가되었습니다.')),
+    );
+
+    Navigator.pop(context);
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    int price = int.parse(widget.menu['price'].replaceAll(',', '').replaceAll('원', ''));
-
-    int totalPrice = (price + selectedOptionPrice) * quantity;
+    int totalPrice = (productPrice + selectedOptionPrice) * quantity;
 
     return Scaffold(
       appBar: AppBar(
@@ -172,7 +215,7 @@ class _OptionScreenState extends State<OptionScreen> {
           children: [
             Expanded(
               child: GestureDetector(
-                onTap: () {
+                onTap: addToCart/*() {
                   // 장바구니 로직 추가
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -180,7 +223,7 @@ class _OptionScreenState extends State<OptionScreen> {
                     ),
                   );
                   Navigator.pop(context);
-                },
+                }*/,
                 child: Container(
                   height: 40.0, // 버튼의 높이를 설정합니다.
                   width: double.infinity, // 버튼의 너비를 화면 전체로 설정합니다.
