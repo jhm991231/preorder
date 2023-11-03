@@ -22,13 +22,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
               email: emailAddress, password: password);
-      // 2.user라는 collection에 document 생성해서 저장
-      await FirebaseFirestore.instance.collection("users").add({
-        "uid": credential.user?.uid ?? "",
+      // 2.user라는 collection에 document 생성해서 저장, 문서ID는 유저의 uid로 세팅
+      String userId = credential.user?.uid ?? ""; // 사용자 UID를 얻습니다.
+      await FirebaseFirestore.instance.collection("users").doc(userId).set({
+        "uid": userId,
         "email": credential.user?.email ?? ""
-      });
+      }, SetOptions(merge: true));
+
       return true;
-    } on FirebaseAuthException catch (e) {
+          } on FirebaseAuthException catch (e) {
       if (e.code == "weak-password") {
         print("패스워드가 약합니다.");
       } else if (e.code == "email-already-in-use") {

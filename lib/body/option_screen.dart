@@ -56,7 +56,7 @@ class _OptionScreenState extends State<OptionScreen> {
 
   Future<void> addToCart() async {
     User? user = FirebaseAuth.instance.currentUser;
-
+    print(user);
     List<Map<String, dynamic>> selectedOptions = [];
     for (var entry in optionCheckStatus.entries) {
       if (entry.value) {
