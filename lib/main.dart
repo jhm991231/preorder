@@ -15,6 +15,8 @@ import 'body/cart.dart';
 import 'body/home_screen.dart';
 import 'login/sign_up_screen.dart';
 
+UserCredential? userCredential;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(

@@ -115,20 +115,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       pwdTextController.text.trim(),
                     );
                     if (result) {
-                      print("sign-up successful");
                       if (context.mounted) {
-                        print("**********회원가입 성공**********");
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("회원가입 성공")),
+                          const SnackBar(content: Center(child: Text("회원가입 성공"))),
                         );
                         context.go("/login");
                       }
                     } else {
-                      print("sign-up failed");
 
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("회원가입 실패")),
+                          const SnackBar(content: Center(child: Text("회원가입 실패"))),
                         );
                       }
                     }

@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:preorder/main.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -24,6 +26,8 @@ class _LoginScreenState extends State<LoginScreen> {
       final credential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
       print(credential);
+      userCredential = credential;
+
       return credential;
     } on FirebaseAuthException catch (e) {
       if (e.code == "user-not-found") {
@@ -47,10 +51,21 @@ class _LoginScreenState extends State<LoginScreen> {
       accessToken: googleAuth?.accessToken,
       idToken: googleAuth?.idToken,
     );
-
     // 3. signInWithCredential에 credential 넣어 firebase 인증에 정보 등록 가능
     // 즉, gooleAuth를 통해 token들 가져와서 firebase에 넣는다
-    return await FirebaseAuth.instance.signInWithCredential(credential);
+    UserCredential userCredential= await FirebaseAuth.instance.signInWithCredential(credential);
+
+    // Firestore에 사용자 정보 저장
+    User? user = userCredential.user;
+    if (user != null) {
+      // users 컬렉션에 문서 추가 (문서 ID = 사용자 UID)
+      FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'email': user.email,
+        'uid': user.uid,
+      }, SetOptions(merge: true)); // merge: true 옵션을 사용하여 이미 존재하는 문서에 데이터를 추가하거나 업데이트
+    }
+
+    return userCredential;
   }
 
   @override
