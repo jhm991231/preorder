@@ -77,8 +77,9 @@ class _OptionScreenState extends State<OptionScreen> {
     int totalPrice = (productPrice + selectedOptionPrice) * quantity;
 
     CollectionReference userCart = FirebaseFirestore.instance.collection('users').doc(user!.uid).collection('cart');
+
     await userCart.add({
-      'productName': widget.menu['name'],
+      'productName': widget.menu['productName'],
       'productPrice': productPrice,
       'selectedOptions': selectedOptions,
       'quantity': quantity,

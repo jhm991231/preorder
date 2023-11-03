@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
             IconButton(
               icon: const Icon(Icons.shopping_bag),
               onPressed: () {
-                context.go('/cart');
+                context.push('/cart');
               },
             ),
           ],
