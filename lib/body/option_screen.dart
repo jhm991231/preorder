@@ -27,7 +27,7 @@ class _OptionScreenState extends State<OptionScreen> {
   void initState() {
     super.initState();
     optionStream = FirebaseFirestore.instance.collection('option').snapshots();
-    productPrice =  int.parse(widget.menu['price'].replaceAll(',', '').replaceAll('원', ''));
+    productPrice =  widget.menu['productPrice'];
   }
 
   void updateSelectedOptionPrice(int price, bool isSelected) {
@@ -124,7 +124,7 @@ class _OptionScreenState extends State<OptionScreen> {
               // 이미지의 높이를 150으로 설정
               const SizedBox(height: 10),
               // 간격 추가
-              Text(widget.menu['name'],
+              Text(widget.menu['productName'],
                   style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               // 음료 이름
               const SizedBox(height: 40),

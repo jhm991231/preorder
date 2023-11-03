@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'option_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -53,7 +54,10 @@ class _HomeScreenState extends State<HomeScreen> {
             CategoryBar(
               onCategorySelect: updateCategory,
             ),
-            MenuList(selectedCategory: selectedCategory,),
+
+            MenuList(
+                selectedCategory: selectedCategory,
+            ),
           ],
         ),
         );
@@ -159,8 +163,6 @@ class MenuList extends StatefulWidget {
 
   @override
   _MenuListState createState() => _MenuListState();
-
-
 }
 
 class _MenuListState extends State<MenuList> {
@@ -206,7 +208,6 @@ class _MenuListState extends State<MenuList> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -247,7 +248,12 @@ class _MenuListState extends State<MenuList> {
               ),
               onTap: () {
                 // 메뉴 항목 클릭 시 액션 구현
-                print("${menus[index]["name"]} 선택됨");
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => OptionScreen(menu: menus[index]),
+                  ),
+                );
+                print("${menus[index]["productName"]} 선택됨");
               },
             ),
           );
