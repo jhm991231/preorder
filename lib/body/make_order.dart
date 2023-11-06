@@ -44,7 +44,7 @@ Future<double> calculateTotalPrice(List<Map<String, dynamic>> cartItems) async {
   return totalPrice;
 }
 
-Future<void> createOrder(String userId, List<Map<String, dynamic>> cartItems, DateTime pickupTime) async {
+Future<void> createOrder(String userId, List<Map<String, dynamic>> cartItems, int pickupTime) async {
 
   double totalPrice = await calculateTotalPrice(cartItems);
 
@@ -61,7 +61,7 @@ Future<void> createOrder(String userId, List<Map<String, dynamic>> cartItems, Da
   await FirebaseFirestore.instance.collection("orders").add(orderData);
 }
 
-Future<bool> processOrder(String userId, DateTime pickupTime) async {
+Future<bool> processOrder(String userId, int pickupTime) async {
   try {
     var cartItems = await fetchCartItems(userId);
     if (cartItems.isNotEmpty) {

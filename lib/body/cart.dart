@@ -231,7 +231,7 @@ class _CartScreenState extends State<CartScreen> {
               borderRadius: BorderRadius.zero,
             )),
         onPressed: () async {
-          DateTime pickupTime = DateTime.now().add(Duration(hours: 1)); // 예제용
+          int pickupTime = 5; // 예제용
           bool orderProcessed = await processOrder(widget.userId, pickupTime);
 
           // 여기서 processOrder는 Future<bool>을 반환하고, 주문 처리가 성공했는지 여부를 알려줍니다.
