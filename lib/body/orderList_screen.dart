@@ -14,6 +14,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final FirebaseAuth auth = FirebaseAuth.instance;
 
+  // 상태에 알맞은 텍스트로 변환
   String getStatusText(String status) {
     switch (status) {
       case "ORDER":
@@ -28,7 +29,8 @@ class _OrderListScreenState extends State<OrderListScreen> {
         return "상태 불명";
     }
   }
-
+  
+  // 음료 여러 개 주문 시 -> ...외 x개 로 만들기
   String getProductNameText(List<dynamic> items) {
     if (items.length == 1) {
       return items[0]['productName'];
@@ -39,12 +41,14 @@ class _OrderListScreenState extends State<OrderListScreen> {
     }
   }
 
+  // 숫자로 된 금액을 -> 1,000,000원 으로 변환
   String formatCurrency(num totalPrice) {
     final formatCurrency = NumberFormat.simpleCurrency(
         locale: 'ko_KR', name: 'KRW', decimalDigits: 0);
     return formatCurrency.format(totalPrice);
   }
 
+  // order data에 있는 timestamp를 "2023년 05월
   String formatTimestamp(Timestamp timestamp) {
     DateTime dateTime = timestamp.toDate();
     return DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
@@ -85,7 +89,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
               // 여기서 각 주문에 대한 위젯을 만듭니다.
               // 예를 들어, 주문 이름과 총 가격을 표시할 수 있습니다.
               return Container(
-                margin: const EdgeInsets.all(8.0),
+                margin: const EdgeInsets.all(10.0),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey), // 회색 테두리를 추가합니다.
                   borderRadius: BorderRadius.circular(4.0), // 모서리를 약간 둥글게 합니다.
@@ -95,7 +99,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                   title: Text(
                     productNameText,
                     style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold),
+                        fontSize: 17, fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(
                     formatTimestamp(orderData["timestamp"]),
@@ -108,12 +112,12 @@ class _OrderListScreenState extends State<OrderListScreen> {
                       Text(
                         statusText,
                         style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                            fontSize: 17, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         formatCurrency(orderData["totalPrice"]),
                         style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                            fontSize: 17, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),

@@ -96,7 +96,7 @@ class _OptionScreenState extends State<OptionScreen> {
       'status': 'IN_CART',
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('장바구니에 추가되었습니다.')),
+      const SnackBar(content: Center(child: Text('장바구니에 추가되었습니다'))),
     );
 
     Navigator.pop(context);
@@ -108,7 +108,9 @@ class _OptionScreenState extends State<OptionScreen> {
 
       return Scaffold(
         appBar: AppBar(
-          title: const Text("옵션 선택 화면"),
+          title: const Text("옵션 선택 화면", style: TextStyle(color: Colors.white),),
+          backgroundColor: const Color(0xff303742),
+
         ),
         body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
           stream: optionStream,
