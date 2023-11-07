@@ -196,7 +196,7 @@ class _CartScreenState extends State<CartScreen> {
         .toStringAsFixed(totalAmount.truncateToDouble() == totalAmount ? 0 : 2);
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Column(
         children: [
           Row(
@@ -211,7 +211,7 @@ class _CartScreenState extends State<CartScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('결제예정금액', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text('결제예정금액', style: TextStyle(fontWeight: FontWeight.bold)),
               Text('$totalAmountString원',
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ],

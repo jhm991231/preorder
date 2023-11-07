@@ -44,13 +44,32 @@ Future<double> calculateTotalPrice(List<Map<String, dynamic>> cartItems) async {
   return totalPrice;
 }
 
-Future<void> createOrder(String userId, List<Map<String, dynamic>> cartItems, int pickupTime) async {
+Future<int> generateOrderId() async {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  DocumentReference counterRef = firestore.collection('counter').doc('updateOrderId');
 
+  return firestore.runTransaction<int>((transaction) async {
+    DocumentSnapshot snapshot = await transaction.get(counterRef);
+
+    if (!snapshot.exists) {
+      throw Exception("Counter document does not exist!");
+    }
+
+    int newOrderId = snapshot.get("orderId") + 1;
+    transaction.update(counterRef, {"orderId": newOrderId});
+
+    return newOrderId;
+  });
+}
+
+
+Future<void> createOrder(String userId, List<Map<String, dynamic>> cartItems, int pickupTime) async {
+  int orderId = await generateOrderId();
   double totalPrice = await calculateTotalPrice(cartItems);
 
   var orderData = {
     'items': cartItems,
-    'orderId': '생성할 orderID',  // Unique order ID 생성 방식에 따라 설정
+    'orderId': orderId,  // Unique order ID 생성 방식에 따라 설정
     'pickupTime': pickupTime,
     'status' : "ORDER",
     'timestamp': FieldValue.serverTimestamp(),
@@ -58,7 +77,8 @@ Future<void> createOrder(String userId, List<Map<String, dynamic>> cartItems, in
     'uid': userId
   };
 
-  await FirebaseFirestore.instance.collection("orders").add(orderData);
+  String docName = "order$orderId";
+  await FirebaseFirestore.instance.collection("orders").doc(docName).set(orderData);
 }
 
 Future<bool> processOrder(String userId, int pickupTime) async {
