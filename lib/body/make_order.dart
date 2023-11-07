@@ -50,7 +50,7 @@ Future<void> createOrder(String userId, List<Map<String, dynamic>> cartItems, in
 
   var orderData = {
     'items': cartItems,
-    'orderID': '생성할 orderID',  // Unique order ID 생성 방식에 따라 설정
+    'orderId': '생성할 orderID',  // Unique order ID 생성 방식에 따라 설정
     'pickupTime': pickupTime,
     'status' : "ORDER",
     'timestamp': FieldValue.serverTimestamp(),
