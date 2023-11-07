@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:preorder/body/orderList_screen.dart';
 import 'package:preorder/body/order_status.dart';
 import '../body/mypage.dart';  // MyPage 위젯을 가져옵니다.
 import '../body/home_screen.dart';  // HomeScreen 위젯을 가져옵니다.
@@ -17,6 +18,8 @@ class _MainScreenState extends State<MainScreen> {
     switch (index) {
       case 0:
         return HomeScreen();
+      case 1:
+        return OrderListScreen();
       /*case 1:
       // 여기에서는 OrderStatusPage를 반환하되, orderId는 비동기로 검색해야 합니다.
       // 이 경우, FutureBuilder를 사용하거나 다른 상태 관리 방법을 사용하여
@@ -63,7 +66,7 @@ class _MainScreenState extends State<MainScreen> {
         index: _selectedIndex,
         children: List.generate(3, (index) => _buildWidgetOption(index)),
       ),      bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
+        items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: '홈',
