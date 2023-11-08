@@ -114,7 +114,7 @@ class _CategoryBarState extends State<CategoryBar> {
         itemBuilder: (context, index) {
           bool isSelected = categories[index] == selectedCategory;
           return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10.0),
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
             child: ElevatedButton(
               onPressed: () {
                 setState(() {
@@ -131,7 +131,7 @@ class _CategoryBarState extends State<CategoryBar> {
                       color: isSelected ? Color(0xff303742) : Colors.grey,
                     ),
                   ),
-                  SizedBox(height: 4.0),
+                  const SizedBox(height: 4.0),
                   isSelected
                       ? Container(
                           width: 20.0,

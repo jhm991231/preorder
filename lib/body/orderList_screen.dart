@@ -85,6 +85,8 @@ class _OrderListScreenState extends State<OrderListScreen> {
                   snapshot.data?.docs[index].data() as Map<String, dynamic>;
               String statusText = getStatusText(orderData["status"]);
               String productNameText = getProductNameText(orderData["items"]);
+              String timeStamp = formatTimestamp(orderData['timestamp'] as Timestamp);
+
               //DateTime timestamp = (orderData["timestamp"] as Timestamp).toDate();
               // 여기서 각 주문에 대한 위젯을 만듭니다.
               // 예를 들어, 주문 이름과 총 가격을 표시할 수 있습니다.
@@ -102,7 +104,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                         fontSize: 17, fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(
-                    formatTimestamp(orderData["timestamp"]),
+                    timeStamp,
                     style: const TextStyle(fontSize: 15),
                   ),
                   // 타임스탬프를 로컬 시간으로 변환하여 표시

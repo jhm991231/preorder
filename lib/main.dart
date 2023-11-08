@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:preorder/body/make_order.dart';
+import 'package:preorder/body/order_screen.dart';
 import 'package:preorder/firebase_options.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:preorder/home/mainscreen.dart';
@@ -72,6 +73,10 @@ class PreorderApp extends StatelessWidget {
         GoRoute(
           path: "/cart",
           builder: (context, state) => CartScreen(userId: currentUserId),
+        ),
+        GoRoute(
+          path: "/order",
+          builder: (context, state) => OrderScreen(userId: currentUserId),
         )
       ],
     );
