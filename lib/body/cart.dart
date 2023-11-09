@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'make_order.dart';
+import 'order_screen.dart';
 
 class CartScreen extends StatefulWidget {
   final String userId;
@@ -231,22 +233,10 @@ class _CartScreenState extends State<CartScreen> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.zero,
             )),
-        onPressed: () async {
-          int pickupTime = 5; // 예제용
-          bool orderProcessed = await processOrder(widget.userId, pickupTime);
-
-          // 여기서 processOrder는 Future<bool>을 반환하고, 주문 처리가 성공했는지 여부를 알려줍니다.
-          if (orderProcessed) {
-            // 주문 처리가 성공하면, Navigator를 사용하여 홈 화면으로 이동합니다.
-            Navigator.popUntil(context, (route) => route.isFirst);
-          } else {
-            // 주문 처리에 실패했을 때는 오류 메시지를 보여주는 등의 처리를 할 수 있습니다.
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("주문 처리에 실패했습니다. 다시 시도해주세요.")),
-            );
-          }
-        },
-        child: Text('주문하기', style: TextStyle(color: Colors.white)),
+        onPressed: () {
+          context.push('/order');
+          },
+        child: const Text('주문하기', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
       ),
     );
   }

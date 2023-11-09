@@ -95,6 +95,8 @@ class _OptionScreenState extends State<OptionScreen> {
       'itemPrice': itemPrice,
       'status': 'IN_CART',
     });
+
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Center(child: Text('장바구니에 추가되었습니다'))),
     );
@@ -232,7 +234,9 @@ class _OptionScreenState extends State<OptionScreen> {
             children: [
               Expanded(
                 child: GestureDetector(
-                  onTap: addToCart,
+                  onTap: () async{
+                    await addToCart();
+                  } ,
                   child: Container(
                     height: 40.0,
                     // 버튼의 높이를 설정합니다.
@@ -259,8 +263,9 @@ class _OptionScreenState extends State<OptionScreen> {
               const SizedBox(width: 10,),
               Expanded(
                 child: GestureDetector(
-                  onTap: () {
-                    // 주문하기 로직 추가
+                  onTap: () async{
+                    await addToCart();
+                    context.push("/order");
                   },
                   child: Container(
                     height: 40.0,
