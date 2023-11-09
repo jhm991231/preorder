@@ -154,7 +154,7 @@ class _CartScreenState extends State<CartScreen> {
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
                   Text(
-                    '${item['productPrice'].toString()}원',
+                    '${item['itemPrice'].toString()}원',
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
                   ...optionsWidgets, // 옵션 리스트
@@ -189,7 +189,7 @@ class _CartScreenState extends State<CartScreen> {
   Widget _totalAmountSection(List<Map<String, dynamic>> cartItems) {
     var totalAmount = 0.0;
     cartItems.forEach((item) {
-      totalAmount += item['productPrice'];
+      totalAmount += item['itemPrice'] * item['quantity'];
     });
 
     String totalAmountString = totalAmount
@@ -211,7 +211,8 @@ class _CartScreenState extends State<CartScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('결제예정금액', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text('결제예정금액',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               Text('$totalAmountString원',
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ],

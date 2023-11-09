@@ -28,8 +28,10 @@ class _MyPageState extends State<MyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:
-          CustomAppBar(title: '마이페이지', centerTitle: true,),
+      appBar: CustomAppBar(
+        title: '마이페이지',
+        centerTitle: true,
+      ),
       body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Padding(
           padding: const EdgeInsets.all(16.0),
@@ -123,10 +125,15 @@ class _MyPageState extends State<MyPage> {
               onPressed: () => signOut(context),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20.0),
-                child: Text('로그아웃', style: TextStyle(fontSize: 18)),
+                child: Text('로그아웃',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               ),
               style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.black, backgroundColor: Color(0x8CE7E7E7), //
+                foregroundColor: Colors.black,
+                backgroundColor: Color(0x8CE7E7E7),
+                shape:
+                    RoundedRectangleBorder(borderRadius: BorderRadius.zero), //
               ),
             ),
           ),
