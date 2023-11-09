@@ -67,6 +67,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
         stream: firestore
             .collection('orders')
             .where('uid', isEqualTo: currentUser?.uid)
+            .where('status', isEqualTo: "FINISHED")
             .orderBy('timestamp', descending: true) // 시간순으로 최신이 위로 오게 정렬
             .snapshots(),
         builder: (context, snapshot) {

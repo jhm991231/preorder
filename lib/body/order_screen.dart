@@ -54,17 +54,19 @@ class _OrderScreenState extends State<OrderScreen> {
             List<Map<String, dynamic>> cartItems = snapshot.data!;
             return Column(
               children: [
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: cartItems.length,
-                    itemBuilder: (context, index) {
-                      var item = cartItems[index];
-                      return _buildCartItem(item);
-                    },
-                  ),
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: cartItems.length,
+                  itemBuilder: (context, index) {
+                    var item = cartItems[index];
+                    return _buildCartItem(item);
+                  },
                 ),
+                const SizedBox(height: 18,),
                 _specialRequestsSection(),
+                const SizedBox(height: 18,),
                 _arrivalTimeSelectionSection(),
+                const Spacer(),
                 _totalAmountSection(cartItems),
                 _purchaseButton(),
               ],
@@ -115,14 +117,13 @@ class _OrderScreenState extends State<OrderScreen> {
                 children: [
                   Text(
                     item['productName'],
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                   Text(
                     '${item['productPrice'].toString()}원',
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                   ...optionsWidgets, // 옵션 리스트
-                  // 수량 등 추가적인 정보를 여기에 추가할 수 있습니다.
                 ],
               ),
             ),
@@ -219,25 +220,58 @@ class _OrderScreenState extends State<OrderScreen> {
   }
 
   Widget _specialRequestsSection() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: TextField(
-        controller: _specialRequestController,
-        decoration: const InputDecoration(
-          labelText: '요청사항',
-          border: OutlineInputBorder(),
-          hintText: '특별 요청 사항이 있다면 입력해주세요',
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(left: 12.0, top: 8.0, bottom: 8.0),
+          child: Text('요청사항',
+              style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF969393))),
         ),
-        keyboardType: TextInputType.text,
-      ),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: TextField(
+            controller: _specialRequestController,
+            decoration: const InputDecoration(
+              labelText: '요청사항',
+              border: OutlineInputBorder(),
+              hintText: '특별 요청 사항이 있다면 입력해주세요',
+            ),
+            keyboardType: TextInputType.text,
+          ),
+        ),
+      ],
     );
   }
 
   Widget _arrivalTimeSelectionSection() {
-    return ListTile(
-      title: Text('도착 예상 시간: $_selectedTime 분 후'),
-      trailing: const Icon(Icons.arrow_drop_down),
-      onTap: _showTimeSelection,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(left: 12.0, top: 8.0, bottom: 8.0),
+          child: Text('도착 예정 시간',
+              style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF969393))),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ListTile(
+            //title: Text('도착 예상 시간: $_selectedTime 분 후'),
+            shape: RoundedRectangleBorder(
+              side: const BorderSide(color: Colors.grey, width: 1.0), // 경계선의 색상과 두께를 설정
+              borderRadius: BorderRadius.circular(4.0), // 모서리의 둥글기를 설정
+            ),
+            trailing: const Icon(Icons.arrow_drop_down),
+            onTap: _showTimeSelection,
+          ),
+        ),
+      ],
     );
   }
 
@@ -249,7 +283,7 @@ class _OrderScreenState extends State<OrderScreen> {
           itemCount: 20,
           itemBuilder: (BuildContext context, int index) {
             return ListTile(
-              title: Text('${index + 1}'),
+              title: Center(child: Text('${index + 1}분 후')),
               onTap: () {
                 setState(() {
                   _selectedTime = index + 1;
