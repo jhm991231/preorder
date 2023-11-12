@@ -75,7 +75,7 @@ class _MainScreenState extends State<MainScreen> {
             label: '홈',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.kitchen),
+            icon: Icon(Icons.local_cafe),
             label: '주문현황',
           ),
           BottomNavigationBarItem(
