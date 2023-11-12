@@ -16,6 +16,9 @@ class OrderScreen extends StatefulWidget {
 
 class _OrderScreenState extends State<OrderScreen> {
   late Future<List<Map<String, dynamic>>> cartItemsFuture;
+  List<Map<String, dynamic>> cartItems = [];
+
+  bool isLoading = true; // 로딩 상태를 추적하는 변수
 
   TextEditingController _specialRequestController = TextEditingController();
   int _selectedTime = 1; // Default time
@@ -23,12 +26,24 @@ class _OrderScreenState extends State<OrderScreen> {
   @override
   void initState() {
     super.initState();
-    cartItemsFuture = fetchCartItems(widget.userId);
+    fetchCartItems(widget.userId).then((items) {
+      setState(() {
+        cartItems = items;
+        isLoading = false; // 데이터 로딩 완료
+      });
+    }).catchError((error) {
+      // 에러 처리
+      print('장바구니 데이터 로딩 중 오류 발생: $error');
+      setState(() {
+        isLoading = false;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: const Color(0xff303742),
         leading: IconButton(
@@ -41,18 +56,9 @@ class _OrderScreenState extends State<OrderScreen> {
         ),
         centerTitle: true,
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: cartItemsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('오류가 발생했습니다: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('결제할 제품이 없습니다'));
-          } else {
-            List<Map<String, dynamic>> cartItems = snapshot.data!;
-            return Column(
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
               children: [
                 ListView.builder(
                   shrinkWrap: true,
@@ -62,17 +68,26 @@ class _OrderScreenState extends State<OrderScreen> {
                     return _buildCartItem(item);
                   },
                 ),
-                const SizedBox(height: 18,),
+                const SizedBox(
+                  height: 18,
+                ),
                 _specialRequestsSection(),
-                const SizedBox(height: 18,),
+                const SizedBox(
+                  height: 18,
+                ),
                 _arrivalTimeSelectionSection(),
                 const Spacer(),
-                _totalAmountSection(cartItems),
-                _purchaseButton(),
               ],
-            );
-          }
-        },
+            ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _totalAmountSection(cartItems),
+            _purchaseButton(),
+          ],
+        ),
       ),
     );
   }
@@ -94,7 +109,7 @@ class _OrderScreenState extends State<OrderScreen> {
     // 상품 옵션을 위젯으로 변환합니다.
     var optionsWidgets = (item['options'] as List<Map<String, dynamic>>)
         .map((option) => Text(
-        '${option['optionName'] ?? ''}: ${option['optionPrice'] ?? ''}원'))
+            '${option['optionName'] ?? ''}: ${option['optionPrice'] ?? ''}원'))
         .toList();
 
     return Padding(
@@ -155,7 +170,7 @@ class _OrderScreenState extends State<OrderScreen> {
     var totalAmount = 0.0;
 
     for (var item in cartItems) {
-      totalAmount += item['productPrice'] ?? 0;
+      totalAmount += item['itemPrice'] ?? 0;
     }
 
     String totalAmountString = totalAmount
@@ -197,7 +212,6 @@ class _OrderScreenState extends State<OrderScreen> {
               borderRadius: BorderRadius.zero,
             )),
         onPressed: () async {
-
           String specialRequest = _specialRequestController.text;
 
           bool orderProcessed = await processOrder(widget.userId, _selectedTime, specialRequest);
@@ -216,7 +230,11 @@ class _OrderScreenState extends State<OrderScreen> {
             );
           }
         },
-        child: const Text('결제하기', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
+        child: const Text('결제하기',
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.bold)),
       ),
     );
   }
@@ -266,7 +284,8 @@ class _OrderScreenState extends State<OrderScreen> {
           child: ListTile(
             //title: Text('도착 예상 시간: $_selectedTime 분 후'),
             shape: RoundedRectangleBorder(
-              side: const BorderSide(color: Colors.grey, width: 1.0), // 경계선의 색상과 두께를 설정
+              side: const BorderSide(color: Colors.grey, width: 1.0),
+              // 경계선의 색상과 두께를 설정
               borderRadius: BorderRadius.circular(4.0), // 모서리의 둥글기를 설정
             ),
             trailing: const Icon(Icons.arrow_drop_down),

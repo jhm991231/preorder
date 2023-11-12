@@ -191,7 +191,7 @@ class _CartScreenState extends State<CartScreen> {
   Widget _totalAmountSection(List<Map<String, dynamic>> cartItems) {
     var totalAmount = 0.0;
     cartItems.forEach((item) {
-      totalAmount += item['itemPrice'] * item['quantity'];
+      totalAmount += (item['itemPrice'] * item['quantity']);
     });
 
     String totalAmountString = totalAmount
