@@ -4,7 +4,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
   final bool centerTitle;
-  final bool showBackButton;  // 뒤로 가기 버튼을 표시할지 결정하는 변수
+  final bool showBackButton; // 뒤로 가기 버튼을 표시할지 결정하는 변수
 
   CustomAppBar({
     required this.title,
@@ -19,17 +19,19 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text(title),
+      title: Text(
+        title,
+        style: TextStyle(color: Colors.white),
+      ),
       actions: actions,
       centerTitle: centerTitle,
       backgroundColor: Color(0xff303742),
       leading: showBackButton // 뒤로 가기 버튼 표시 조건
           ? IconButton(
-        icon: Icon(Icons.close),
-        onPressed: () => Navigator.pop(context),  // 뒤로 가기 기능
-      )
-          : null,  // 아무것도 표시하지 않음
+              icon: Icon(Icons.close),
+              onPressed: () => Navigator.pop(context), // 뒤로 가기 기능
+            )
+          : null, // 아무것도 표시하지 않음
     );
   }
 }
-

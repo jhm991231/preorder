@@ -198,7 +198,9 @@ class _OrderScreenState extends State<OrderScreen> {
             )),
         onPressed: () async {
 
-          bool orderProcessed = await processOrder(widget.userId, _selectedTime);
+          String specialRequest = _specialRequestController.text;
+
+          bool orderProcessed = await processOrder(widget.userId, _selectedTime, specialRequest);
 
           // 여기서 processOrder는 Future<bool>을 반환하고, 주문 처리가 성공했는지 여부를 알려줍니다.
           if (orderProcessed) {

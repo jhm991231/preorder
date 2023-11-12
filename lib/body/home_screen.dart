@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'option_screen.dart';
+import '../model/appbar.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -61,25 +62,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         );
-  }
-}
-
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String title;
-  final List<Widget>? actions;
-
-  CustomAppBar({required this.title, this.actions});
-
-  @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      title: Text(title),
-      actions: actions,
-      backgroundColor: const Color(0xff303742),
-    );
   }
 }
 

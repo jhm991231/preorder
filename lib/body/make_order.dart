@@ -67,7 +67,7 @@ Future<int> generateOrderId() async {
 
 
 Future<void> createOrder(String userId, List<Map<String, dynamic>> cartItems,
-    int pickupTime) async {
+    int pickupTime, String specialRequest) async {
   int orderId = await generateOrderId();
   double totalPrice = await calculateTotalPrice(cartItems);
 
@@ -78,7 +78,8 @@ Future<void> createOrder(String userId, List<Map<String, dynamic>> cartItems,
     'status': "ORDER",
     'timestamp': FieldValue.serverTimestamp(),
     'totalPrice': totalPrice,
-    'uid': userId
+    'uid': userId,
+    'specialRequest': specialRequest,
   };
 
   String docName = "order$orderId";
@@ -86,11 +87,11 @@ Future<void> createOrder(String userId, List<Map<String, dynamic>> cartItems,
       orderData);
 }
 
-Future<bool> processOrder(String userId, int pickupTime) async {
+Future<bool> processOrder(String userId, int pickupTime, String specialRequest) async {
   try {
     var cartItems = await fetchCartItems(userId);
     if (cartItems.isNotEmpty) {
-      await createOrder(userId, cartItems, pickupTime); // 주문 생성
+      await createOrder(userId, cartItems, pickupTime, specialRequest); // 주문 생성
       await clearCart(userId); // 장바구니 비우기
       return true; // 주문 생성과 장바구니 비우기가 성공적으로 완료되었다면 true 반환
     }
