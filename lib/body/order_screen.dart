@@ -171,7 +171,7 @@ class _OrderScreenState extends State<OrderScreen> {
     var totalAmount = 0.0;
 
     for (var item in cartItems) {
-      totalAmount += item['itemPrice'] ?? 0;
+      totalAmount += item['itemPrice'] * item['quantity'] ?? 0;
     }
 
     String totalAmountString = totalAmount
@@ -249,7 +249,7 @@ class _OrderScreenState extends State<OrderScreen> {
           padding: EdgeInsets.only(left: 12.0, top: 8.0, bottom: 8.0),
           child: Text('요청사항',
               style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 17,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF969393))),
         ),
@@ -277,14 +277,14 @@ class _OrderScreenState extends State<OrderScreen> {
           padding: EdgeInsets.only(left: 12.0, top: 8.0, bottom: 8.0),
           child: Text('도착 예정 시간',
               style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 17,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF969393))),
         ),
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: ListTile(
-            //title: Text('도착 예상 시간: $_selectedTime 분 후'),
+            title: Center(child: Text('${_selectedTime ?? '선택 안됨'} 분 후')), // 선택한 시간을 표시
             shape: RoundedRectangleBorder(
               side: const BorderSide(color: Colors.grey, width: 1.0),
               // 경계선의 색상과 두께를 설정
