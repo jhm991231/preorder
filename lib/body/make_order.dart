@@ -14,13 +14,15 @@ Future<List<Map<String, dynamic>>> fetchCartItems(String userId) async {
       var data = doc.data();
 
       // selectedOptions가 배열이고 각각의 옵션에는 'optionName'과 'optionPrice'가 있다고 가정합니다.
-      var selectedOptions = List<Map<String, dynamic>>.from(data['selectedOptions'] ?? []);
+      var selectedOptions = List<Map<String, dynamic>>.from(
+          data['selectedOptions'] ?? []);
 
       // 새로운 구조로 상품 정보 맵 생성
       var productMap = {
         'options': selectedOptions,
         'productName': data['productName'],
-        'productPrice': data['totalPrice'],
+        'productPrice': data['productPrice'],
+        'itemPrice': data['itemPrice'],
         'productId': data['productId'],
         'quantity': data['quantity']
       };
@@ -38,15 +40,16 @@ Future<double> calculateTotalPrice(List<Map<String, dynamic>> cartItems) async {
   double totalPrice = 0.0;
 
   for (var item in cartItems) {
-    totalPrice += (item['productPrice'] as num?)?.toDouble() ?? 0.0;
-  }
-
-  return totalPrice;
-}
+    totalPrice +=
+    ((item['itemPrice'] * item['quantity']) as num?)?.toDouble() ?? 0.0;
+    }
+        return totalPrice;
+    }
 
 Future<int> generateOrderId() async {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
-  DocumentReference counterRef = firestore.collection('counter').doc('updateOrderId');
+  DocumentReference counterRef = firestore.collection('counter').doc(
+      'updateOrderId');
 
   return firestore.runTransaction<int>((transaction) async {
     DocumentSnapshot snapshot = await transaction.get(counterRef);
@@ -63,29 +66,32 @@ Future<int> generateOrderId() async {
 }
 
 
-Future<void> createOrder(String userId, List<Map<String, dynamic>> cartItems, int pickupTime) async {
+Future<void> createOrder(String userId, List<Map<String, dynamic>> cartItems,
+    int pickupTime, String specialRequest) async {
   int orderId = await generateOrderId();
   double totalPrice = await calculateTotalPrice(cartItems);
 
   var orderData = {
     'items': cartItems,
-    'orderId': orderId,  // Unique order ID 생성 방식에 따라 설정
+    'orderId': orderId, // Unique order ID 생성 방식에 따라 설정
     'pickupTime': pickupTime,
-    'status' : "ORDER",
+    'status': "ORDER",
     'timestamp': FieldValue.serverTimestamp(),
-    'totalPrice' : totalPrice,
-    'uid': userId
+    'totalPrice': totalPrice,
+    'uid': userId,
+    'specialRequest': specialRequest,
   };
 
   String docName = "order$orderId";
-  await FirebaseFirestore.instance.collection("orders").doc(docName).set(orderData);
+  await FirebaseFirestore.instance.collection("orders").doc(docName).set(
+      orderData);
 }
 
-Future<bool> processOrder(String userId, int pickupTime) async {
+Future<bool> processOrder(String userId, int pickupTime, String specialRequest) async {
   try {
     var cartItems = await fetchCartItems(userId);
     if (cartItems.isNotEmpty) {
-      await createOrder(userId, cartItems, pickupTime); // 주문 생성
+      await createOrder(userId, cartItems, pickupTime, specialRequest); // 주문 생성
       await clearCart(userId); // 장바구니 비우기
       return true; // 주문 생성과 장바구니 비우기가 성공적으로 완료되었다면 true 반환
     }
@@ -104,7 +110,8 @@ Future<bool> clearCart(String userId) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     // 장바구니 컬렉션의 경로 지정
-    CollectionReference cartCollection = firestore.collection('users').doc(userId).collection('cart');
+    CollectionReference cartCollection = firestore.collection('users').doc(
+        userId).collection('cart');
 
     // 장바구니 컬렉션의 모든 문서 가져오기
     QuerySnapshot cartSnapshot = await cartCollection.get();
@@ -122,7 +129,7 @@ Future<bool> clearCart(String userId) async {
   }
 }
 
-Future<bool> removeFromCart(String userId, String productId) async{
+Future<bool> removeFromCart(String userId, String productId) async {
   try {
     // Firestore 인스턴스를 가져옵니다.
     FirebaseFirestore firestore = FirebaseFirestore.instance;

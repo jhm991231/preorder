@@ -74,7 +74,7 @@ class _OptionScreenState extends State<OptionScreen> {
     }
 
     //int _productPrice = productPrice;
-    int totalPrice = (productPrice + selectedOptionPrice) * quantity;
+    int itemPrice = (productPrice + selectedOptionPrice);
 
     DocumentReference cartItemRef = FirebaseFirestore.instance
         .collection('users')
@@ -92,7 +92,7 @@ class _OptionScreenState extends State<OptionScreen> {
       'productPrice': productPrice,
       'selectedOptions': selectedOptions,
       'quantity': quantity,
-      'totalPrice': totalPrice,
+      'itemPrice': itemPrice,
       'status': 'IN_CART',
     });
 

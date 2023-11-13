@@ -125,11 +125,15 @@ class _MyPageState extends State<MyPage> {
               onPressed: () => signOut(context),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20.0),
-                child: Text('로그아웃', style: TextStyle(fontSize: 18)),
+                child: Text('로그아웃',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               ),
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.black,
-                backgroundColor: Color(0x8CE7E7E7), //
+                backgroundColor: Color(0x8CE7E7E7),
+                shape:
+                    RoundedRectangleBorder(borderRadius: BorderRadius.zero), //
               ),
             ),
           ),

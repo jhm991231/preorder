@@ -1,8 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:preorder/body/orderList_screen.dart';
 import 'package:preorder/body/order_status.dart';
-import '../body/mypage.dart';  // MyPage 위젯을 가져옵니다.
-import '../body/home_screen.dart';  // HomeScreen 위젯을 가져옵니다.
+import '../body/mypage.dart'; // MyPage 위젯을 가져옵니다.
+import '../body/home_screen.dart'; // HomeScreen 위젯을 가져옵니다.
 
 class MainScreen extends StatefulWidget {
   @override
@@ -11,7 +12,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
-  String? _orderId; // 이 변수는 선택된 주문 ID를 저장합니다.
+  final OrderService orderService = OrderService();
 
   // 현재 선택된 인덱스에 따라 위젯을 반환하는 함수
   Widget _buildWidgetOption(int index) {
@@ -19,18 +20,31 @@ class _MainScreenState extends State<MainScreen> {
       case 0:
         return HomeScreen();
       case 1:
-        return OrderListScreen();
-      /*case 1:
-      // 여기에서는 OrderStatusPage를 반환하되, orderId는 비동기로 검색해야 합니다.
-      // 이 경우, FutureBuilder를 사용하거나 다른 상태 관리 방법을 사용하여
-      // orderId를 관리해야 합니다.
-      // 아래 코드는 예시이며 실제로는 orderId를 비동기로 가져와야 합니다.
-        return _orderId != null
-            ? OrderStatusPage(orderId: _orderId!)
-            : CircularProgressIndicator();*/
+        final String userUid = FirebaseAuth.instance.currentUser?.uid ?? '';
+        if (userUid.isEmpty) {
+          // UID가 비어있다면 로그인이 필요하다는 메시지를 표시합니다.
+          return Center(child: Text('로그인이 필요합니다.'));
+        }
+        // 미완료된 주문 ID를 가져옵니다.
+        return FutureBuilder<String?>(
+          future: orderService.getUnfinishedOrderDocumentId(userUid),
+          builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Center(child: Text('오류가 발생했습니다.'));
+            } else if (!snapshot.hasData) {
+              return Center(child: Text('미완료된 주문이 없습니다.'));
+            } else {
+              // 미완료된 주문 ID가 있다면 OrderStatusPage 위젯을 생성하고 ID를 전달합니다.
+              return OrderStatusPage(orderId: snapshot.data!);
+            }
+          },
+        );
       case 2:
+        return OrderListScreen();
+      case 3:
         return MyPage();
-    // 다른 화면들도 이와 같이 추가할 수 있습니다.
       default:
         return HomeScreen(); // 기본값으로 홈 화면을 반환합니다.
     }
@@ -39,18 +53,6 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    // 사용자의 UID를 바탕으로 미완료 주문 ID를 가져옵니다.
-    // 여기서 UID는 현재 로그인한 사용자의 UID를 가져와야 합니다.
-    String userUid = '사용자의 UID';
-    _fetchOrderId(userUid);
-  }
-
-  Future<void> _fetchOrderId(String userUid) async {
-    _orderId = await OrderService().getUnfinishedOrderDocumentId(userUid);
-    // 주문 ID를 가져온 후 UI를 업데이트합니다.
-    if (_selectedIndex == 1) {
-      setState(() {});
-    }
   }
 
   void _onItemTapped(int index) {
@@ -64,12 +66,17 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: IndexedStack(
         index: _selectedIndex,
-        children: List.generate(3, (index) => _buildWidgetOption(index)),
-      ),      bottomNavigationBar: BottomNavigationBar(
+        children: List.generate(4, (index) => _buildWidgetOption(index)),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: '홈',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.local_cafe),
+            label: '주문현황',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.list_alt),
@@ -82,6 +89,10 @@ class _MainScreenState extends State<MainScreen> {
           // ... 다른 네비게이션 아이템들
         ],
         currentIndex: _selectedIndex,
+        selectedItemColor: Colors.black, // 선택된 아이템 색상
+        unselectedItemColor: Colors.grey, // 선택되지 않은 아이템 색상
+        showUnselectedLabels: true, // 선택되지 않은 레이블을 항상 보이게 합니다.
+        showSelectedLabels: true,  // 선택된 레이블을 항상 보이게 합니다.
         onTap: _onItemTapped,
       ),
     );
