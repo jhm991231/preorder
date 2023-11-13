@@ -170,7 +170,7 @@ class _OrderScreenState extends State<OrderScreen> {
     var totalAmount = 0.0;
 
     for (var item in cartItems) {
-      totalAmount += item['itemPrice'] ?? 0;
+      totalAmount += item['itemPrice'] * item['quantity'] ?? 0;
     }
 
     String totalAmountString = totalAmount
