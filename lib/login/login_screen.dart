@@ -160,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               content: Center(child: Text("환영합니다")),
                             ),
                           );
-                          context.go("/home");
+                          context.go("/");
                         }
                       }
                     },
@@ -196,7 +196,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             content: Center(child: Text("환영합니다")),
                           ),
                         );
-                        context.go("/home");
+                        context.go("/");
                       }
                     },
                     child: Image.asset("assets/btn_google_signin.png")),

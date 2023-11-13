@@ -128,16 +128,6 @@ Widget _buildOrderStatusIndicator(String status) {
 }
 
 class _OrderStatusPageState extends State<OrderStatusPage> {
-  int _getStatusLevel(String status) {
-    const statusLevels = {
-      '주문 확인중': 1,
-      '준비 중': 2,
-      '픽업 대기': 3,
-      '완료': 4, // 상태에 따른 레벨을 적절히 조정해주세요.
-    };
-    return statusLevels[status] ?? 0;
-  }
-
   Widget _buildCartItem(Map<String, dynamic> item) {
     // 상품 옵션을 위젯으로 변환합니다.
     var optionsWidgets = List<Widget>.from(

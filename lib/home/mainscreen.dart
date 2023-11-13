@@ -6,6 +6,7 @@ import '../body/mypage.dart'; // MyPage 위젯을 가져옵니다.
 import '../body/home_screen.dart'; // HomeScreen 위젯을 가져옵니다.
 
 class MainScreen extends StatefulWidget {
+
   @override
   _MainScreenState createState() => _MainScreenState();
 }

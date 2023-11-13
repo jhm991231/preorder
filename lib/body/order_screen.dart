@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'make_order.dart';
 
@@ -214,7 +215,8 @@ class _OrderScreenState extends State<OrderScreen> {
         onPressed: () async {
           String specialRequest = _specialRequestController.text;
 
-          bool orderProcessed = await processOrder(widget.userId, _selectedTime, specialRequest);
+          bool orderProcessed =
+              await processOrder(widget.userId, _selectedTime, specialRequest);
 
           // 여기서 processOrder는 Future<bool>을 반환하고, 주문 처리가 성공했는지 여부를 알려줍니다.
           if (orderProcessed) {
@@ -222,7 +224,7 @@ class _OrderScreenState extends State<OrderScreen> {
               const SnackBar(content: Center(child: Text("주문이 완료되었습니다"))),
             );
             // 주문 처리가 성공하면, Navigator를 사용하여 주문현황 화면으로 가기
-            Navigator.popUntil(context, (route) => route.isFirst);
+            GoRouter.of(context).go('/order_status');
           } else {
             // 주문 처리에 실패했을 때는 오류 메시지를 보여주는 등의 처리를 할 수 있습니다.
             ScaffoldMessenger.of(context).showSnackBar(

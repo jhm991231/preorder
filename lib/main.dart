@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:preorder/body/make_order.dart';
+import 'package:preorder/body/orderList_screen.dart';
 import 'package:preorder/body/order_screen.dart';
 import 'package:preorder/firebase_options.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -14,6 +15,7 @@ import 'package:preorder/body/mypage.dart';
 
 import 'body/cart.dart';
 import 'body/home_screen.dart';
+import 'body/order_status.dart';
 import 'login/sign_up_screen.dart';
 
 UserCredential? userCredential;
@@ -36,7 +38,7 @@ void main() async {
 
   // 이전 종료시 로그인 상태였는지 로그아웃 상태였는지
   final initialRoute =
-      FirebaseAuth.instance.currentUser == null ? "/login" : "/home";
+      FirebaseAuth.instance.currentUser == null ? "/login" : "/";
 
   runApp(PreorderApp(initialRoute: initialRoute));
 }
@@ -55,8 +57,43 @@ class PreorderApp extends StatelessWidget {
       initialLocation: initialRoute,
       routes: [
         GoRoute(
-          path: "/home",
+          path: "/",
           builder: (context, state) => MainScreen(),
+          routes: [
+            GoRoute(
+              path: 'home',
+              builder: (context, state) => HomeScreen(),
+            ),
+            GoRoute(
+              path: 'order_status',
+              builder: (context, state) {
+                // 가져온 사용자 ID로 주문 ID를 가져오는 FutureBuilder
+                return FutureBuilder<String?>(
+                  future: OrderService().getUnfinishedOrderDocumentId(currentUserId),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('오류가 발생했습니다.');
+                    } else if (!snapshot.hasData) {
+                      return Text('주문 정보를 찾을 수 없습니다.');
+                    } else {
+                      // 주문 ID를 가져왔으면, OrderStatusPage에 전달합니다.
+                      return OrderStatusPage(orderId: snapshot.data!);
+                    }
+                  },
+                );
+              },
+            ),
+            GoRoute(
+              path: 'order_list',
+              builder: (context, state) => OrderListScreen(),
+            ),
+            GoRoute(
+              path: "my_page",
+              builder: (context, state) => MyPage(),
+            )
+          ]
         ),
         GoRoute(
           path: "/login",
@@ -67,17 +104,13 @@ class PreorderApp extends StatelessWidget {
           builder: (context, state) => SignUpScreen(),
         ),
         GoRoute(
-          path: "/my_page",
-          builder: (context, state) => MyPage(),
-        ),
-        GoRoute(
           path: "/cart",
           builder: (context, state) => CartScreen(userId: currentUserId),
         ),
         GoRoute(
           path: "/order",
           builder: (context, state) => OrderScreen(userId: currentUserId),
-        )
+        ),
       ],
     );
 
