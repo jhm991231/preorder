@@ -3,8 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'option_screen.dart';
-import '../model/appbar.dart';
+import 'package:preorder/pages/Order/option_screen.dart';
+import 'package:preorder/components/appbar.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -13,7 +13,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String selectedCategory = "COFFEE(ICE)";
-  int _selectedIndex = 0;
 
   void updateCategory(String newCategory) {
     setState(() {

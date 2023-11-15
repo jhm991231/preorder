@@ -1,18 +1,21 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:preorder/body/orderList_screen.dart';
-import 'package:preorder/body/order_status.dart';
-import '../body/mypage.dart'; // MyPage 위젯을 가져옵니다.
-import '../body/home_screen.dart'; // HomeScreen 위젯을 가져옵니다.
+import 'package:preorder/pages/Home/orderList_screen.dart';
+import 'package:preorder/pages/Home/orderStatus_screen.dart';
+import 'package:preorder/pages/Home/mypage_screen.dart'; // MyPage 위젯을 가져옵니다.
+import 'package:preorder/pages/Home/home_screen.dart'; // HomeScreen 위젯을 가져옵니다.
 
 class MainScreen extends StatefulWidget {
+  final int initialIndex;
+
+  MainScreen({Key? key, this.initialIndex = 0}) : super(key: key);
 
   @override
   _MainScreenState createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
+  late int _selectedIndex;
   final OrderService orderService = OrderService();
 
   // 현재 선택된 인덱스에 따라 위젯을 반환하는 함수
@@ -54,6 +57,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
+    _selectedIndex = widget.initialIndex;
   }
 
   void _onItemTapped(int index) {

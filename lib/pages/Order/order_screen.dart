@@ -1,10 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-import 'make_order.dart';
+import 'package:preorder/make_order.dart';
 
 class OrderScreen extends StatefulWidget {
   final String userId;
@@ -224,7 +222,7 @@ class _OrderScreenState extends State<OrderScreen> {
               const SnackBar(content: Center(child: Text("주문이 완료되었습니다"))),
             );
             // 주문 처리가 성공하면, Navigator를 사용하여 주문현황 화면으로 가기
-            GoRouter.of(context).go('/order_status');
+            context.go('/', extra: 1);
           } else {
             // 주문 처리에 실패했을 때는 오류 메시지를 보여주는 등의 처리를 할 수 있습니다.
             ScaffoldMessenger.of(context).showSnackBar(
@@ -284,7 +282,8 @@ class _OrderScreenState extends State<OrderScreen> {
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: ListTile(
-            title: Center(child: Text('${_selectedTime ?? '선택 안됨'} 분 후')), // 선택한 시간을 표시
+            title: Center(child: Text('${_selectedTime ?? '선택 안됨'} 분 후')),
+            // 선택한 시간을 표시
             shape: RoundedRectangleBorder(
               side: const BorderSide(color: Colors.grey, width: 1.0),
               // 경계선의 색상과 두께를 설정
