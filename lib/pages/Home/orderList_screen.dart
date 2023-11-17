@@ -58,10 +58,6 @@ class _OrderListScreenState extends State<OrderListScreen> {
   Widget build(BuildContext context) {
     User? currentUser = auth.currentUser;
     return Scaffold(
-      appBar: AppBar(
-        title: const Center(child: Text('주문 내역', style: TextStyle(color: Colors.white),)),
-        backgroundColor: const Color(0xff303742),
-      ),
       body: StreamBuilder<QuerySnapshot>(
         // 현재 로그인한 사용자의 uid와 일치하는 주문만 스트림으로 가져옵니다.
         stream: firestore

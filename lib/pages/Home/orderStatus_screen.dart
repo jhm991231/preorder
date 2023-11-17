@@ -221,7 +221,6 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: '주문 현황', centerTitle: true),
       body: StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance
             .collection('orders')

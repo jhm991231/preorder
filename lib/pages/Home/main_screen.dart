@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:preorder/pages/Home/combinedOrder_screen.dart';
 import 'package:preorder/pages/Home/orderList_screen.dart';
 import 'package:preorder/pages/Home/orderStatus_screen.dart';
 import 'package:preorder/pages/Home/mypage_screen.dart';
@@ -24,30 +25,8 @@ class _MainScreenState extends State<MainScreen> {
       case 0:
         return HomeScreen();
       case 1:
-        final String userUid = FirebaseAuth.instance.currentUser?.uid ?? '';
-        if (userUid.isEmpty) {
-          // UID가 비어있다면 로그인이 필요하다는 메시지를 표시합니다.
-          return Center(child: Text('로그인이 필요합니다.'));
-        }
-        // 미완료된 주문 ID를 가져옵니다.
-        return FutureBuilder<String?>(
-          future: orderService.getUnfinishedOrderDocumentId(userUid),
-          builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return Center(child: Text('오류가 발생했습니다.'));
-            } else if (!snapshot.hasData) {
-              return Center(child: Text('미완료된 주문이 없습니다.'));
-            } else {
-              // 미완료된 주문 ID가 있다면 OrderStatusPage 위젯을 생성하고 ID를 전달합니다.
-              return OrderStatusPage(orderId: snapshot.data!);
-            }
-          },
-        );
+        return CombinedOrderScreen();
       case 2:
-        return OrderListScreen();
-      case 3:
         return MyPage();
       default:
         return HomeScreen(); // 기본값으로 홈 화면을 반환합니다.
@@ -71,17 +50,13 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: IndexedStack(
         index: _selectedIndex,
-        children: List.generate(4, (index) => _buildWidgetOption(index)),
+        children: List.generate(3, (index) => _buildWidgetOption(index)),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: '홈',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.local_cafe),
-            label: '주문현황',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.list_alt),
