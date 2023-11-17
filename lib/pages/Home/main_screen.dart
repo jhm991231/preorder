@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:preorder/pages/Home/orderList_screen.dart';
 import 'package:preorder/pages/Home/orderStatus_screen.dart';
-import 'package:preorder/pages/Home/mypage_screen.dart'; // MyPage 위젯을 가져옵니다.
-import 'package:preorder/pages/Home/home_screen.dart'; // HomeScreen 위젯을 가져옵니다.
+import 'package:preorder/pages/Home/mypage_screen.dart';
+import 'package:preorder/pages/Home/home_screen.dart';
 
 class MainScreen extends StatefulWidget {
   final int initialIndex;

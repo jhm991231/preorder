@@ -51,16 +51,16 @@ class PreorderApp extends StatelessWidget {
           path: "/",
           builder: (context, state) {
             var index = state.extra as int? ?? 0;
-            return MainScreen(initialIndex: index);
+            return MainScreen(key: UniqueKey(), initialIndex: index);
           },
         ),
         GoRoute(
           path: "/login",
-          builder: (context, state) => LoginScreen(),
+          builder: (context, state) => const LoginScreen(),
         ),
         GoRoute(
           path: "/sign_up",
-          builder: (context, state) => SignUpScreen(),
+          builder: (context, state) => const SignUpScreen(),
         ),
         GoRoute(
           path: "/cart",
