@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -19,6 +20,14 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailTextController = TextEditingController();
   TextEditingController pwdTextController = TextEditingController();
 
+  //FCM 토큰 Firestore에 저장하는 함수
+  Future<void> saveTokenToFirestore(String? token) async {
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    await FirebaseFirestore.instance.collection('users').doc(userId).set({
+      'token': token,
+    }, SetOptions(merge: true));
+  }
+
   // 회원가입한 내역을 가지고 로그인 검증
   //firbase에서 인증에서 로그인하는 로직
   Future<UserCredential?> signIn(String email, String password) async {
@@ -26,6 +35,11 @@ class _LoginScreenState extends State<LoginScreen> {
       final credential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
       print(credential);
+
+      if(credential.user!=null){
+        String? token=await FirebaseMessaging.instance.getToken();
+        await saveTokenToFirestore(token);
+      }
       userCredential = credential;
 
       return credential;
@@ -63,6 +77,9 @@ class _LoginScreenState extends State<LoginScreen> {
         'email': user.email,
         'uid': user.uid,
       }, SetOptions(merge: true)); // merge: true 옵션을 사용하여 이미 존재하는 문서에 데이터를 추가하거나 업데이트
+
+      String? token = await FirebaseMessaging.instance.getToken();
+      await saveTokenToFirestore(token);
     }
 
     return userCredential;

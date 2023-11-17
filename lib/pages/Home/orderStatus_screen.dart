@@ -56,7 +56,7 @@ Widget _buildOrderStatusText(String status, String text, bool isActive) {
   return Text(
     text,
     style: TextStyle(
-      color: isActive ? Color(0xFFEF7474) : Colors.black,
+      color: isActive ? const Color(0xFFEF7474) : Colors.black,
       fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
     ),
   );
@@ -105,7 +105,7 @@ Widget _buildOrderStatusIndicator(String status) {
             child: Container(
               height: 20,
               decoration: BoxDecoration(
-                color: Color(0xFFEF7474),
+                color: const Color(0xFFEF7474),
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
@@ -134,7 +134,7 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
       (item['options'] as List).map(
         (option) => Text(
           '${option['optionName'] ?? ''}: ${option['optionPrice'] ?? ''}',
-          style: TextStyle(fontSize: 14),
+          style: const TextStyle(fontSize: 14),
         ),
       ),
     );
@@ -153,7 +153,7 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
               borderRadius: BorderRadius.circular(8.0),
             ),
           ),
-          SizedBox(width: 16.0),
+          const SizedBox(width: 16.0),
           // 상품 이름과 옵션들을 표시할 Expanded
           Expanded(
             child: Column(
@@ -161,7 +161,7 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
               children: [
                 Text(
                   item['productName'],
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 ...optionsWidgets,
               ],
@@ -172,7 +172,7 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
             children: [
               Text(
                 '${item['itemPrice'].toString()}원',
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -180,7 +180,7 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
 
               Text(
                 '수량: ${item['quantity'].toString()}',
-                style: TextStyle(
+                style: const TextStyle(
                   color: Color(0xff8A8484),
                 ),
               )
@@ -197,7 +197,7 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
+          const Text(
             '결제 금액',
             style: TextStyle(
               fontSize: 16,
@@ -206,7 +206,7 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
           ),
           Text(
             '${totalPrice.toInt().toString()}원',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Colors.black,
@@ -229,11 +229,11 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('오류가 발생했습니다.'));
+            return const Center(child: Text('오류가 발생했습니다.'));
           } else if (!snapshot.hasData || snapshot.data?.data() == null) {
-            return Center(child: Text('주문 정보를 찾을 수 없습니다.'));
+            return const Center(child: Text('주문 정보를 찾을 수 없습니다.'));
           } else {
             Map<String, dynamic> orderData =
                 snapshot.data!.data() as Map<String, dynamic>;
@@ -274,41 +274,41 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
             String formattedPickupTime =
                 DateFormat('yyyy. MM. dd. kk:mm').format(pickupTime);
             return ListView(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               children: <Widget>[
                 Text(
                   '도서관 카페점에서\n${FirebaseAuth.instance.currentUser?.email ?? 'Unknown'}님의 음료를\n$orderStatusMessage',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Text(
                   '주문 번호: $orderId',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
                   ),
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 Text(
                   '주문 시간: $formattedTime',
-                  style: TextStyle(fontSize: 13),
+                  style: const TextStyle(fontSize: 13),
                   textAlign: TextAlign.center,
                 ),
                 Text(
                   '픽업 타임: $formattedPickupTime', // 픽업 시간을 표시합니다.
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 13),
+                  style: const TextStyle(fontSize: 13),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _buildOrderStatusIndicator(status),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ...items.map((item) => _buildCartItem(item)).toList(),
-                SizedBox(height: 20),
-                Divider(
+                const SizedBox(height: 20),
+                const Divider(
                   color: Color(0xFFDDDDDD),
                   thickness: 1, // 줄의 두께 설정
                 ),
