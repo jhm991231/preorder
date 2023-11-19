@@ -34,33 +34,32 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: CustomAppBar(
-          title: "cafe",
-          actions: <Widget>[
-            IconButton(
-              onPressed: () => signOut(context),
-              icon: const Icon(Icons.logout),
-            ),
-            IconButton(
-              icon: const Icon(Icons.shopping_bag),
-              onPressed: () {
-                context.push('/cart');
-              },
-            ),
-          ],
-        ),
-        body: Column(
-          children: [
-            CategoryBar(
-              onCategorySelect: updateCategory,
-            ),
-
-            MenuList(
-                selectedCategory: selectedCategory,
-            ),
-          ],
-        ),
-        );
+      appBar: CustomAppBar(
+        title: "cafe",
+        actions: <Widget>[
+          IconButton(
+            onPressed: () => signOut(context),
+            icon: const Icon(Icons.logout),
+          ),
+          IconButton(
+            icon: const Icon(Icons.shopping_bag),
+            onPressed: () {
+              context.push('/cart');
+            },
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          CategoryBar(
+            onCategorySelect: updateCategory,
+          ),
+          MenuList(
+            selectedCategory: selectedCategory,
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -75,6 +74,7 @@ class CategoryBar extends StatefulWidget {
 
 class _CategoryBarState extends State<CategoryBar> {
   final List<String> categories = [
+    "BEST SELLERS",
     "COFFEE(ICE)",
     "COFFEE(HOT)",
     "BEVERAGE",
@@ -166,23 +166,40 @@ class _MenuListState extends State<MenuList> {
 
   Future<void> fetchMenus() async {
     try {
+      if (widget.selectedCategory == "BEST SELLERS") {
+        var querySnapshot = await FirebaseFirestore.instance
+            .collectionGroup('drinks')
+            .orderBy('sales', descending: true)
+            .limit(10)
+            .get();
+
+        var fetchedMenus = querySnapshot.docs.map((doc) {
+          return doc.data() as Map<String, dynamic>;
+        }).toList();
+
+        setState(() {
+          menus = fetchedMenus;
+        });
+      }
       // 'category' 컬렉션에서 선택된 카테고리 문서에 접근
-      var categoryDoc = FirebaseFirestore.instance
-          .collection('category')
-          .doc(widget.selectedCategory);
+      else {
+        var categoryDoc = FirebaseFirestore.instance
+            .collection('category')
+            .doc(widget.selectedCategory);
 
-      // 'drinks' 서브 컬렉션에서 메뉴 데이터 가져오기
-      var querySnapshot = await categoryDoc.collection('drinks').get();
+        // 'drinks' 서브 컬렉션에서 메뉴 데이터 가져오기
+        var querySnapshot = await categoryDoc.collection('drinks').get();
 
-      // Firestore 문서를 Dart 객체로 변환
-      var fetchedMenus = querySnapshot.docs.map((doc) {
-        return doc.data() as Map<String, dynamic>;
-      }).toList();
+        // Firestore 문서를 Dart 객체로 변환
+        var fetchedMenus = querySnapshot.docs.map((doc) {
+          return doc.data() as Map<String, dynamic>;
+        }).toList();
 
-      // 상태 업데이트
-      setState(() {
-        menus = fetchedMenus;
-      });
+        // 상태 업데이트
+        setState(() {
+          menus = fetchedMenus;
+        });
+      }
     } catch (e) {
       print(e);
       // 오류 처리 (예: 사용자에게 메시지 표시)

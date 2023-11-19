@@ -1,8 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../make_order.dart';
-import 'order_screen.dart';
+import 'package:preorder/make_order.dart';
 
 class CartScreen extends StatefulWidget {
   final String userId;
