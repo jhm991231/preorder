@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter/material.dart';
 import 'package:preorder/components/appbar.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:preorder/components/logout_confirmation_dialog.dart';
 
 class MyPage extends StatefulWidget {
   @override
@@ -10,20 +9,7 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
-  final User? user = FirebaseAuth.instance.currentUser;
-
-  Future<void> signOut(BuildContext context) async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      await GoogleSignIn().signOut();
-
-      context.go("/login");
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("로그아웃 실패 : $e")),
-      );
-    }
-  }
+  final User? user=FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +108,7 @@ class _MyPageState extends State<MyPage> {
           child: SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () => signOut(context),
+              onPressed: () => showLogoutConfirmation(context),
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.black,
                 backgroundColor: const Color(0x8CE7E7E7),

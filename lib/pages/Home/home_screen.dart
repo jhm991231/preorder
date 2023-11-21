@@ -1,10 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:preorder/pages/Order/option_screen.dart';
 import 'package:preorder/components/appbar.dart';
+import 'package:preorder/components/logout_confirmation_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -20,17 +19,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Future<void> signOut(BuildContext context) async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      await GoogleSignIn().signOut();
-      context.go("/login");
-    } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("로그아웃 실패 : $e")));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,11 +26,13 @@ class _HomeScreenState extends State<HomeScreen> {
         title: "cafe",
         actions: <Widget>[
           IconButton(
-            onPressed: () => signOut(context),
+            onPressed: () => showLogoutConfirmation(context),
             icon: const Icon(Icons.logout),
+            color: Colors.white,
           ),
           IconButton(
             icon: const Icon(Icons.shopping_bag),
+            color: Colors.white,
             onPressed: () {
               context.push('/cart');
             },
@@ -170,7 +160,7 @@ class _MenuListState extends State<MenuList> {
         var querySnapshot = await FirebaseFirestore.instance
             .collectionGroup('drinks')
             .orderBy('sales', descending: true)
-            .limit(10)
+            .limit(5)
             .get();
 
         var fetchedMenus = querySnapshot.docs.map((doc) {
