@@ -56,7 +56,7 @@ void main() async {
     AndroidNotification? android = message.notification?.android;
     if (notification != null && android != null) {
       flutterLocalNotificationsPlugin.show(
-        0,
+        notification.hashCode,
         notification.title,
         notification.body,
         NotificationDetails(
@@ -144,4 +144,41 @@ class PreorderApp extends StatelessWidget {
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   print("Handling a background message: ${message.messageId}");
+
+  const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    'high_importance_channel', // 채널 ID
+    'High Importance Notifications', // 채널 이름
+    description: 'This channel is used for important notifications.', // 채널 설명
+    importance: Importance.high,
+  );
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  FlutterLocalNotificationsPlugin();
+
+  // 플러그인 초기화
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+      AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
+
+  // 백그라운드에서 수신된 알림을 사용자에게 표시
+  RemoteNotification? notification = message.notification;
+  AndroidNotification? android = message.notification?.android;
+  if (notification != null && android != null) {
+    flutterLocalNotificationsPlugin.show(
+      notification.hashCode,
+      notification.title,
+      notification.body,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          channel.id,
+          channel.name,
+          channelDescription: channel.description,
+          icon: 'megaphone', // 적절한 아이콘 설정 필요
+        ),
+        // iOS와 기타 플랫폼을 위한 설정...
+      ),
+    );
+  }
 }
+
