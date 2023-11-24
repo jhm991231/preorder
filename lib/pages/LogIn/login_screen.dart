@@ -76,6 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
       FirebaseFirestore.instance.collection('users').doc(user.uid).set({
         'email': user.email,
         'uid': user.uid,
+        'name': user.displayName,
       }, SetOptions(merge: true)); // merge: true 옵션을 사용하여 이미 존재하는 문서에 데이터를 추가하거나 업데이트
 
       String? token = await FirebaseMessaging.instance.getToken();

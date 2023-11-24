@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:preorder/components/appbar.dart';
 import 'package:preorder/components/logout_confirmation_dialog.dart';
+import 'package:preorder/components/user_data_fetcher.dart';
 
 class MyPage extends StatefulWidget {
   @override
@@ -9,7 +10,19 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
-  final User? user=FirebaseAuth.instance.currentUser;
+  final User? user = FirebaseAuth.instance.currentUser;
+  Map<String, dynamic> userData = {};
+
+  @override
+  void initState() {
+    super.initState();
+      fetchUserData().then((data) {
+        setState(() {
+          userData = data;
+        });
+      });
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,13 +37,39 @@ class _MyPageState extends State<MyPage> {
           child: Container(
             padding: const EdgeInsets.all(16.0),
             decoration: const BoxDecoration(
-              color: Color(0xFFE7E7E7),
+              color: Colors.transparent,
+              borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
             child: Row(
               children: [
-                const Icon(Icons.person, size: 50),
-                const SizedBox(width: 16),
-                Text(user?.email ?? '로그인 정보 없음'), // 사용자 이메일 가져오기
+                CircleAvatar(
+                  radius: 25,
+                  backgroundImage: NetworkImage(user?.photoURL ?? ''),
+                  backgroundColor: Colors.transparent,
+                ),
+                const SizedBox(
+                  width: 16,
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        userData['name'] ?? '사용자 이름 없음',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        userData['email'] ?? '로그인 정보 없음',
+                        style: const TextStyle(
+                          color: Colors.grey,
+                        ),
+                      )
+                    ],
+                  ),
+                )
               ],
             ),
           ),
@@ -112,8 +151,8 @@ class _MyPageState extends State<MyPage> {
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.black,
                 backgroundColor: const Color(0x8CE7E7E7),
-                shape:
-                    const RoundedRectangleBorder(borderRadius: BorderRadius.zero), //
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero), //
               ),
               child: const Padding(
                 padding: EdgeInsets.symmetric(vertical: 20.0),
