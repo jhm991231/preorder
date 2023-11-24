@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -189,54 +190,73 @@ class _MenuListState extends State<MenuList> {
     }
   }
 
+  Future<String> loadImage(String drinkName) async {
+    String imagePath = 'gs://preorder-d773a.appspot.com/$drinkName.jpg';
+    Reference storageReference = FirebaseStorage.instance.refFromURL(imagePath);
+
+    String imageUrl = await storageReference.getDownloadURL();
+    return imageUrl;
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: ListView.builder(
         itemCount: menus.length,
         itemBuilder: (BuildContext context, int index) {
-          return Container(
-            height: 135.0,
-            decoration: BoxDecoration(
-                border: Border(
-                    bottom: BorderSide(
-              color: Color(0xffDDDDDB),
-            ))),
-            child: ListTile(
-              contentPadding:
-                  EdgeInsets.symmetric(vertical: 13.5, horizontal: 36.0),
-              title: Padding(
-                padding: EdgeInsets.only(left: 110.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      menus[index]["productName"],
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    Text(
-                      '${menus[index]["productPrice"].toString()}원',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              onTap: () {
-                // 메뉴 항목 클릭 시 액션 구현
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => OptionScreen(menu: menus[index]),
-                  ),
+          return FutureBuilder<String>(
+            future: loadImage(menus[index]["productName"]),
+            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+              Widget imageWidget;
+              if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                imageWidget = Container(
+                  width: 70, // 이미지에 할당할 가로 크기
+                  height: 100, // 이미지에 할당할 세로 크기
+                  child: Image.network(snapshot.data!, fit: BoxFit.fill),
                 );
-                print("${menus[index]["productName"]} 선택됨");
-              },
-            ),
+              } else {
+                imageWidget = const CircularProgressIndicator(); // 로딩 중 표시
+              }
+
+              return Container(
+                height: 135.0,
+                decoration: const BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: Color(0xffDDDDDB)),
+                  ),
+                ),
+                child: ListTile(
+                  leading: imageWidget, // 이미지 추가
+                  contentPadding: const EdgeInsets.symmetric(vertical: 13.5, horizontal: 36.0),
+                  title: Padding(
+                    padding: const EdgeInsets.only(left: 10.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          menus[index]["productName"],
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                        ),
+                        Text(
+                          '${menus[index]["productPrice"].toString()}원',
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                        ),
+                      ],
+                    ),
+                  ),
+                  onTap: () {
+                    // 메뉴 항목 클릭 시 액션 구현
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => OptionScreen(menu: menus[index]),
+                      ),
+                    );
+                    print("${menus[index]["productName"]} 선택됨");
+                  },
+                ),
+              );
+            },
           );
         },
       ),
