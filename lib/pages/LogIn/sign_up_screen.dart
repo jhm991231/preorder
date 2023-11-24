@@ -15,18 +15,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   TextEditingController emailTextController = TextEditingController();
   TextEditingController pwdTextController = TextEditingController();
+  TextEditingController nameTextController = TextEditingController();
 
-  Future<bool> signUp(String emailAddress, String password) async {
+  Future<bool> signUp(String emailAddress, String password, String name) async {
     try {
       // 1. 회원가입
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
               email: emailAddress, password: password);
+
+      await credential.user?.updateDisplayName(name);
+      await credential.user?.reload();
+
       // 2.user라는 collection에 document 생성해서 저장, 문서ID는 유저의 uid로 세팅
       String userId = credential.user?.uid ?? ""; // 사용자 UID를 얻습니다.
       await FirebaseFirestore.instance.collection("users").doc(userId).set({
         "uid": userId,
-        "email": credential.user?.email ?? ""
+        "email": credential.user?.email ?? "",
+        "name": name,
       }, SetOptions(merge: true));
 
       return true;
@@ -84,7 +90,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       },
                     ),
                     const SizedBox(
-                      height: 24,
+                      height: 12,
                     ),
                     TextFormField(
                       controller: pwdTextController,
@@ -99,7 +105,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         }
                         return null;
                       },
-                    )
+                    ),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    TextFormField(
+                      controller: nameTextController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: "이름",
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "이름을 입력하세요";
+                        }
+                        return null;
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -115,6 +137,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     final result = await signUp(
                       emailTextController.text.trim(),
                       pwdTextController.text.trim(),
+                      nameTextController.text.trim(),
                     );
                     if (result) {
                       if (context.mounted) {

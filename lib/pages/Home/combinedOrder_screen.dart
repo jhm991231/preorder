@@ -41,7 +41,7 @@ class OrderStatusTab extends StatelessWidget {
             future: orderService.getUnfinishedOrderDocumentId(userUid),
             builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
+                return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Center(child: Text('오류가 발생했습니다.'));
               } else if (!snapshot.hasData) {
