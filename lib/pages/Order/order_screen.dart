@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:preorder/make_order.dart';
@@ -221,6 +222,17 @@ class _OrderScreenState extends State<OrderScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Center(child: Text("주문이 완료되었습니다"))),
             );
+            for (var item in cartItems) {
+              // 'drinks' 서브컬렉션에서 productName을 기준으로 쿼리
+              var querySnapshot = await FirebaseFirestore.instance
+                  .collectionGroup('drinks')
+                  .where('productName', isEqualTo: item['productName'])
+                  .get();
+
+              for (var doc in querySnapshot.docs) {
+                doc.reference.update({'sales': FieldValue.increment(1)});
+              }
+            }
             // 주문 처리가 성공하면, Navigator를 사용하여 주문현황 화면으로 가기
             context.go('/', extra: 1);
           } else {

@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:preorder/components/appbar.dart';
+import 'package:preorder/components/user_data_fetcher.dart';
 
 class OrderService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -128,6 +127,18 @@ Widget _buildOrderStatusIndicator(String status) {
 }
 
 class _OrderStatusPageState extends State<OrderStatusPage> {
+  Map<String, dynamic> userData = {};
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData().then((data) {
+      setState(() {
+        userData = data;
+      });
+    });
+  }
+
   Widget _buildCartItem(Map<String, dynamic> item) {
     // 상품 옵션을 위젯으로 변환합니다.
     var optionsWidgets = List<Widget>.from(
@@ -161,7 +172,8 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
               children: [
                 Text(
                   item['productName'],
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 ...optionsWidgets,
               ],
@@ -177,7 +189,6 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
                   fontSize: 16,
                 ),
               ),
-
               Text(
                 '수량: ${item['quantity'].toString()}',
                 style: const TextStyle(
@@ -217,11 +228,11 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
+    String userName = userData['name'] ?? 'Unknown User';
+
     return Scaffold(
-      appBar: CustomAppBar(title: '주문 현황', centerTitle: true),
       body: StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance
             .collection('orders')
@@ -277,7 +288,7 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
               padding: const EdgeInsets.all(16.0),
               children: <Widget>[
                 Text(
-                  '도서관 카페점에서\n${FirebaseAuth.instance.currentUser?.email ?? 'Unknown'}님의 음료를\n$orderStatusMessage',
+                  '도서관 카페점에서\n$userName 님의 음료를\n$orderStatusMessage',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 18,
