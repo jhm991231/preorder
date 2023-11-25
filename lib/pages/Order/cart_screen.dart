@@ -1,3 +1,4 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:preorder/make_order.dart';
@@ -18,6 +19,14 @@ class _CartScreenState extends State<CartScreen> {
   void initState() {
     super.initState();
     cartItemsFuture = fetchCartItems(widget.userId);
+  }
+
+  Future<String> loadImage(String drinkName) async {
+    String imagePath = 'gs://preorder-d773a.appspot.com/$drinkName.jpg';
+    Reference storageReference = FirebaseStorage.instance.refFromURL(imagePath);
+
+    String imageUrl = await storageReference.getDownloadURL();
+    return imageUrl;
   }
 
   @override
@@ -91,19 +100,19 @@ class _CartScreenState extends State<CartScreen> {
       });
       // 삭제 성공 메시지를 보여줍니다.
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("모든 항목이 삭제되었습니다.")),
+        const SnackBar(content: Text("모든 항목이 삭제되었습니다.")),
       );
     } else {
       // 삭제 실패 메시지를 보여줍니다.
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("항목을 삭제하는데 실패했습니다. 다시 시도해주세요.")),
+        const SnackBar(content: Text("항목을 삭제하는데 실패했습니다. 다시 시도해주세요.")),
       );
     }
   }
 
   Widget _selectionSection() {
     return ListTile(
-      leading: Text(
+      leading: const Text(
         '주문 상품',
         style: TextStyle(
           fontSize: 16.0,
@@ -115,7 +124,7 @@ class _CartScreenState extends State<CartScreen> {
           _removeAllItemsFromCart();
           print('전체 삭제 버튼이 눌렸습니다.');
         },
-        child: Text(
+        child: const Text(
           '전체 삭제',
           style: TextStyle(
               color: Colors.black54, fontSize: 12.0), // 색상은 원하는 대로 조정할 수 있습니다.
@@ -136,11 +145,26 @@ class _CartScreenState extends State<CartScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 상품 사진
-          Container(
-            width: 80.0,
-            height: 80.0,
-            color: Colors.grey, // 임시 색상, 여기에 이미지 위젯을 넣을 수 있습니다.
+          // 상품 사진을 FutureBuilder를 사용하여 로드합니다.
+          FutureBuilder<String>(
+            future: loadImage(item['productName']),
+            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+              if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                return Image.network(
+                  snapshot.data!,
+                  width: 80.0,
+                  height: 80.0,
+                  fit: BoxFit.cover,
+                );
+              } else {
+                return Container(
+                  width: 80.0,
+                  height: 80.0,
+                  color: Colors.grey, // 로딩 중 또는 오류 시 표시될 색상
+                  child: snapshot.hasError ? const Icon(Icons.error) : CircularProgressIndicator(),
+                );
+              }
+            },
           ),
           // 상품 이름과 옵션들
           Expanded(
@@ -151,11 +175,11 @@ class _CartScreenState extends State<CartScreen> {
                 children: [
                   Text(
                     item['productName'],
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                   Text(
                     '${item['itemPrice'].toString()}원',
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                   ...optionsWidgets, // 옵션 리스트
                   // 수량 등 추가적인 정보를 여기에 추가할 수 있습니다.
@@ -169,14 +193,14 @@ class _CartScreenState extends State<CartScreen> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               IconButton(
-                icon: Icon(Icons.close),
+                icon: const Icon(Icons.close),
                 onPressed: () {
                   _removeItemFromCart(item['productId']);
                 },
               ),
               Text(
                 '수량: ${item['quantity']}',
-                style: TextStyle(color: Color(0xff8A8484)),
+                style: const TextStyle(color: Color(0xff8A8484)),
               ),
               // '수량' 부분을 오른쪽 아래에 위치
             ],
@@ -188,9 +212,9 @@ class _CartScreenState extends State<CartScreen> {
 
   Widget _totalAmountSection(List<Map<String, dynamic>> cartItems) {
     var totalAmount = 0.0;
-    cartItems.forEach((item) {
+    for (var item in cartItems) {
       totalAmount += (item['itemPrice'] * item['quantity']);
-    });
+    }
 
     String totalAmountString = totalAmount
         .toStringAsFixed(totalAmount.truncateToDouble() == totalAmount ? 0 : 2);
@@ -202,12 +226,12 @@ class _CartScreenState extends State<CartScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('상품금액'),
+              const Text('상품금액'),
               Text('$totalAmountString원'),
             ],
           ),
           // 할인금액이 필요하면 추가로 Row를 하나 더 만들면 됩니다.
-          Divider(),
+          const Divider(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -227,8 +251,8 @@ class _CartScreenState extends State<CartScreen> {
       width: double.infinity,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-            backgroundColor: Color(0xff303732),
-            shape: RoundedRectangleBorder(
+            backgroundColor: const Color(0xff303732),
+            shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.zero,
             )),
         onPressed: () {

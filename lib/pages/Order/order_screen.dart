@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:preorder/make_order.dart';
@@ -33,11 +34,18 @@ class _OrderScreenState extends State<OrderScreen> {
       });
     }).catchError((error) {
       // 에러 처리
-      print('장바구니 데이터 로딩 중 오류 발생: $error');
       setState(() {
         isLoading = false;
       });
     });
+  }
+
+  Future<String> loadImage(String drinkName) async {
+    String imagePath = 'gs://preorder-d773a.appspot.com/$drinkName.jpg';
+    Reference storageReference = FirebaseStorage.instance.refFromURL(imagePath);
+
+    String imageUrl = await storageReference.getDownloadURL();
+    return imageUrl;
   }
 
   @override
@@ -117,11 +125,26 @@ class _OrderScreenState extends State<OrderScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 상품 사진
-          Container(
-            width: 80.0,
-            height: 80.0,
-            color: Colors.grey, // 임시 색상, 여기에 이미지 위젯을 넣을 수 있습니다.
+          // 상품 사진을 FutureBuilder를 사용하여 로드합니다.
+          FutureBuilder<String>(
+            future: loadImage(item['productName']),
+            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+              if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                return Image.network(
+                  snapshot.data!,
+                  width: 80.0,
+                  height: 80.0,
+                  fit: BoxFit.cover,
+                );
+              } else {
+                return Container(
+                  width: 80.0,
+                  height: 80.0,
+                  color: Colors.grey, // 로딩 중 또는 오류 시 표시될 색상
+                  child: snapshot.hasError ? const Icon(Icons.error) : CircularProgressIndicator(),
+                );
+              }
+            },
           ),
           // 상품 이름과 옵션들
           Expanded(

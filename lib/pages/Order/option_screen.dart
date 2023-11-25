@@ -56,7 +56,6 @@ class _OptionScreenState extends State<OptionScreen> {
 
   Future<void> addToCart() async {
     User? user = FirebaseAuth.instance.currentUser;
-    print(user);
     List<Map<String, dynamic>> selectedOptions = [];
     for (var entry in optionCheckStatus.entries) {
       if (entry.value) {
@@ -216,10 +215,6 @@ class _OptionScreenState extends State<OptionScreen> {
                         style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
-                      // Text(
-                      //   '${NumberFormat("#,###").format((price + selectedOptionPrice)*quantity)}원',
-                      //   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      // ),
 
                     ],
                   ),

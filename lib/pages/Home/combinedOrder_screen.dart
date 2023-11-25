@@ -11,7 +11,7 @@ class CombinedOrderScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           toolbarHeight: 5,
-          bottom: TabBar(
+          bottom: const TabBar(
             tabs: [
               Tab(text: '주문 현황'),
               Tab(text: '주문 내역'),

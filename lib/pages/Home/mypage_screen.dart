@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:preorder/components/appbar.dart';
 import 'package:preorder/components/logout_confirmation_dialog.dart';
 import 'package:preorder/components/user_data_fetcher.dart';
+
+import 'main_screen.dart';
 
 class MyPage extends StatefulWidget {
   @override
@@ -98,10 +101,11 @@ class _MyPageState extends State<MyPage> {
                   color: Color(0xFF969393))),
         ),
         ListTile(
-          title: const Text('주문현황 상세'),
+          title: const Text('주문 내역'),
           trailing: const Icon(Icons.navigate_next),
           onTap: () {
-            // 터치 시 수행될 동작
+            // '주문 내역' 탭을 탭했을 때, MainScreen으로 이동하면서 initialIndex를 설정합니다.
+            context.push('/', extra: 1);
           },
         ),
         const Padding(

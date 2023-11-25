@@ -94,13 +94,20 @@ class _CategoryBarState extends State<CategoryBar> {
                 });
                 widget.onCategorySelect(categories[index]);
               },
+              style: ElevatedButton.styleFrom(
+                primary: Colors.transparent,
+                onPrimary: Color(0xff303742),
+                shadowColor: Colors.transparent,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     categories[index],
                     style: TextStyle(
-                      color: isSelected ? Color(0xff303742) : Colors.grey,
+                      color: isSelected ? const Color(0xff303742) : Colors.grey,
                     ),
                   ),
                   const SizedBox(height: 4.0),
@@ -108,17 +115,10 @@ class _CategoryBarState extends State<CategoryBar> {
                       ? Container(
                           width: 20.0,
                           height: 2.0,
-                          color: Color(0xff303742),
+                          color: const Color(0xff303742),
                         )
                       : Container(),
                 ],
-              ),
-              style: ElevatedButton.styleFrom(
-                primary: Colors.transparent,
-                onPrimary: Color(0xff303742),
-                shadowColor: Colors.transparent,
-                elevation: 0,
-                padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
               ),
             ),
           );
@@ -192,7 +192,6 @@ class _MenuListState extends State<MenuList> {
         });
       }
     } catch (e) {
-      print(e);
       // 오류 처리 (예: 사용자에게 메시지 표시)
     }
   }
@@ -259,7 +258,6 @@ class _MenuListState extends State<MenuList> {
                         builder: (context) => OptionScreen(menu: menus[index]),
                       ),
                     );
-                    print("${menus[index]["productName"]} 선택됨");
                   },
                 ),
               );
