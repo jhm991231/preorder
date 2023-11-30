@@ -11,6 +11,7 @@ import 'package:preorder/pages/Home/main_screen.dart';
 import 'package:preorder/pages/LogIn/login_screen.dart';
 import 'package:preorder/pages/Order/cart_screen.dart';
 import 'package:preorder/pages/LogIn/sign_up_screen.dart';
+import 'package:preorder/pages/Health/health_screen.dart';
 
 UserCredential? userCredential;
 
@@ -127,6 +128,10 @@ class PreorderApp extends StatelessWidget {
           path: "/order",
           builder: (context, state) => OrderScreen(userId: currentUserId),
         ),
+        GoRoute(
+          path: "/health",
+          builder: (context, state) => HealthManagementScreen(),
+        )
       ],
     );
 

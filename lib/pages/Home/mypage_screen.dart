@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:preorder/components/appbar.dart';
 import 'package:preorder/components/logout_confirmation_dialog.dart';
 import 'package:preorder/components/user_data_fetcher.dart';
@@ -102,6 +103,21 @@ class _MyPageState extends State<MyPage> {
           trailing: const Icon(Icons.navigate_next),
           onTap: () {
             // 터치 시 수행될 동작
+          },
+        ),
+        const Padding(
+          padding: EdgeInsets.only(left: 12.0, top: 8.0, bottom: 8.0),
+          child: Text('건강 관리',
+              style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF969393))),
+        ),
+        ListTile(
+          title: const Text('건강 관리'),
+          trailing: const Icon(Icons.navigate_next),
+          onTap: () {
+                context.push('/health');
           },
         ),
         const Padding(

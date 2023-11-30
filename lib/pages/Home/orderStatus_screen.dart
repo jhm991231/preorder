@@ -230,7 +230,7 @@ class _OrderStatusPageState extends State<OrderStatusPage> {
 
   @override
   Widget build(BuildContext context) {
-    String userName = userData['name'] ?? 'Unknown User';
+    String userName = userData['name'] ?? '';
 
     return Scaffold(
       body: StreamBuilder<DocumentSnapshot>(

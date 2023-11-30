@@ -24,7 +24,8 @@ Future<List<Map<String, dynamic>>> fetchCartItems(String userId) async {
         'productPrice': data['productPrice'],
         'itemPrice': data['itemPrice'],
         'productId': data['productId'],
-        'quantity': data['quantity']
+        'quantity': data['quantity'],
+        'isForMe': data['isForMe'],
       };
 
       cartItems.add(productMap);

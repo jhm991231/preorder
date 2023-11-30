@@ -131,16 +131,36 @@ class _CartScreenState extends State<CartScreen> {
             '${option['optionName'] ?? ''}: ${option['optionPrice'] ?? ''}원'))
         .toList();
 
+    bool isForMe = item['isForMe'] ?? true;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 상품 사진
-          Container(
-            width: 80.0,
-            height: 80.0,
-            color: Colors.grey, // 임시 색상, 여기에 이미지 위젯을 넣을 수 있습니다.
+          // 상품 사진과 'MY' 라벨을 Stack으로 구성
+          Stack(
+            alignment: Alignment.topLeft,
+            children: [
+              Container(
+                width: 80.0,
+                height: 80.0,
+                color: Colors.grey, // 임시 색상, 여기에 이미지 위젯을 넣을 수 있습니다.
+              ),
+              // '내가 먹을 음료'일 경우에만 'MY' 라벨을 표시
+              if (isForMe)
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  color: Colors.red, // 라벨의 배경 색상
+                  child: Text(
+                    'MY',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+            ],
           ),
           // 상품 이름과 옵션들
           Expanded(
@@ -233,8 +253,12 @@ class _CartScreenState extends State<CartScreen> {
             )),
         onPressed: () {
           context.push('/order');
-          },
-        child: const Text('주문하기', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
+        },
+        child: const Text('주문하기',
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.bold)),
       ),
     );
   }
