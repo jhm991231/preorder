@@ -38,9 +38,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return true;
           } on FirebaseAuthException catch (e) {
       if (e.code == "weak-password") {
-        print("패스워드가 약합니다.");
       } else if (e.code == "email-already-in-use") {
-        print("이미 정보가 존재합니다.");
       }
       return false;
     } catch (e) {

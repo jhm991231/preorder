@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="preorder"
+        android:label="팬도로시 오더"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/app_icon"
         android:usesCleartextTraffic="true"
         android:enableOnBackInvokedCallback="true"
         >

@@ -5,6 +5,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:preorder/pages/Home/combinedOrder_screen.dart';
+import 'package:preorder/pages/Home/orderList_screen.dart';
 import 'package:preorder/pages/Order/order_screen.dart';
 import 'package:preorder/firebase_options.dart';
 import 'package:preorder/pages/Home/main_screen.dart';
@@ -24,14 +26,10 @@ void main() async {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   NotificationSettings settings = await messaging.requestPermission();
-  print('User granted permission: ${settings.authorizationStatus}');
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    print('Got a message whilst in the foreground!');
-    print('Message data: ${message.data}');
 
     if (message.notification != null) {
-      print('Message also contained a notification: ${message.notification}');
     }
   });
 
@@ -131,7 +129,11 @@ class PreorderApp extends StatelessWidget {
         GoRoute(
           path: "/health",
           builder: (context, state) => HealthManagementScreen(),
-        )
+        ),
+        GoRoute(
+          path: "/orderHistory",
+          builder: (context, state) => CombinedOrderScreen(),
+        ),
       ],
     );
 
@@ -148,7 +150,6 @@ class PreorderApp extends StatelessWidget {
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print("Handling a background message: ${message.messageId}");
 
   const AndroidNotificationChannel channel = AndroidNotificationChannel(
     'high_importance_channel', // 채널 ID

@@ -34,7 +34,6 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final credential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      print(credential);
 
       if(credential.user!=null){
         String? token=await FirebaseMessaging.instance.getToken();
@@ -45,12 +44,8 @@ class _LoginScreenState extends State<LoginScreen> {
       return credential;
     } on FirebaseAuthException catch (e) {
       if (e.code == "user-not-found") {
-        print(e.toString());
       } else if (e.code == "wrong-password") {
-        print(e.toString());
       }
-    } catch (e) {
-      print(e.toString());
     }
   }
 
