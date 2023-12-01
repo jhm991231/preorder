@@ -198,18 +198,31 @@ exports.uptateIntakeData = functions.firestore
     let monthlyTotalCaffeine = 0;
     let monthlyTotalCalories = 0;
     let userCount = 0;
-    usersSnapshot.forEach((userDoc) => {
-      const healthData = userDoc.data().health;
-      if (healthData) {
-        dailyTotalCaffeine += healthData.daily.caffeine || 0;
-        dailyTotalCalories += healthData.daily.calories || 0;
-        weeklyTotalCaffeine += healthData.weekly.caffeine || 0;
-        weeklyTotalCalories += healthData.weekly.calories || 0;
-        monthlyTotalCaffeine += healthData.monthly.caffeine || 0;
-        monthlyTotalCalories += healthData.monthly.calories || 0;
-        userCount++;
-      }
-    });
+    for (const userDoc of usersSnapshot.docs) {
+      const healthCollection = await userDoc.ref.collection('health').get();
+      console.log("Health Data for user", userDoc.id, healthCollection.docs.map((doc) => doc.data()));
+      // 여기서 각 기간별로 데이터를 수집하고 합산합니다.
+      healthCollection.forEach((healthDoc) => {
+        const healthData = healthDoc.data();
+        console.log("Health Doc Data:", healthData);
+        if (healthData.daily) {
+          dailyTotalCaffeine += healthData.daily.caffeine || 0;
+          dailyTotalCalories += healthData.daily.calories || 0;
+          console.log("Daily Health Data:", healthData);
+        }
+        if (healthData.weekly) {
+          weeklyTotalCaffeine += healthData.weekly.caffeine || 0;
+          weeklyTotalCalories += healthData.weekly.calories || 0;
+        }
+        if (healthData.monthly) {
+          monthlyTotalCaffeine += healthData.monthly.caffeine || 0;
+          monthlyTotalCalories += healthData.monthly.calories || 0;
+        }
+      });
+      userCount++;
+      console.log("User Count:", userCount);
+    }
+    // 평균 계산
     const averageDailyCaffeine = dailyTotalCaffeine / userCount;
     const averageDailyCalories = dailyTotalCalories / userCount;
     const averageWeeklyCaffeine = weeklyTotalCaffeine / userCount;
@@ -218,18 +231,9 @@ exports.uptateIntakeData = functions.firestore
     const averageMonthlyCalories = monthlyTotalCalories / userCount;
     // Firestore에 평균 데이터 저장
     await admin.firestore().collection('healthStats').doc('average').set({
-      daily: {
-        caffeine: averageDailyCaffeine,
-        calories: averageDailyCalories,
-      },
-      weekly: {
-        caffeine: averageWeeklyCaffeine,
-        calories: averageWeeklyCalories,
-      },
-      monthly: {
-        caffeine: averageMonthlyCaffeine,
-        calories: averageMonthlyCalories,
-      },
+      daily: {caffeine: averageDailyCaffeine, calories: averageDailyCalories},
+      weekly: {caffeine: averageWeeklyCaffeine, calories: averageWeeklyCalories},
+      monthly: {caffeine: averageMonthlyCaffeine, calories: averageMonthlyCalories},
     });
     return null;
   });

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:go_router/go_router.dart';
 import 'package:preorder/components/appbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,6 +13,19 @@ class HealthManagementScreen extends StatefulWidget {
 class _HealthManagementScreenState extends State<HealthManagementScreen> {
   int selectedTabIndex = 0; // 탭 선택 상태 (0: 칼로리, 1: 카페인)
   final User? user = FirebaseAuth.instance.currentUser;
+
+  Future<List<MyRow>> fetchData(String period, String type) async {
+    List<MyRow> userHealthData = await fetchUserHealthData(period, type);
+    List<MyRow> averageHealthData = await _fetchAverageHealthData(period, type);
+    int recommendedValue = 15;
+
+    // 리스트의 순서를 바꿔 사용자 섭취량이 먼저 오도록 합니다.
+    return [
+      ...userHealthData,
+      MyRow('권장 섭취량', recommendedValue, Colors.green),
+      ...averageHealthData,
+    ];
+  }
 
   Future<List<MyRow>> fetchUserHealthData(String period, String type) async {
     var healthDoc = await FirebaseFirestore.instance
@@ -27,34 +41,43 @@ class _HealthManagementScreenState extends State<HealthManagementScreen> {
 
     var healthData = healthDoc.data();
     return [
-      MyRow('사용자 섭취량', healthData?[type] ?? 0),
-      MyRow('평균 섭취량', 15), // 평균 섭취량은 임시 데이터입니다.
-      MyRow('권장 섭취량', 20), // 권장 섭취량은 임시 데이터입니다.
+      MyRow(
+        '사용자 섭취량',
+        healthData?[type] ?? 0,
+        Color(0xff303742),
+      )
     ];
   }
 
-  Future<List<MyRow>> _fetchAverageHealthData(String period, String type) async {
+  Future<List<MyRow>> _fetchAverageHealthData(
+      String period, String type) async {
     var healthStatsDoc = await FirebaseFirestore.instance
         .collection('healthStats')
         .doc('average')
         .get();
 
     if (!healthStatsDoc.exists) {
-      return [MyRow('평균 섭취량', 0)]; // 리스트 형태로 반환
+      // 문서가 존재하지 않으면 평균 섭취량을 0으로 설정합니다.
+      return [MyRow('평균 섭취량', 0, Colors.yellow)];
     }
 
     var healthStatsData = healthStatsDoc.data();
     var averageValue = healthStatsData?[period]?[type] ?? 0;
-    return [MyRow('평균 섭취량', averageValue)]; // 리스트 형태로 반환
+    return [MyRow('평균 섭취량', averageValue, Colors.yellow)];
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        title: '건강 관리',
+      appBar: AppBar(
+        title: Text('건강 관리',
+        style: TextStyle(color: Colors.white),),
         centerTitle: true,
+        backgroundColor: Color(0xff303742),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => context.go('/', extra: 2),
+        ),
       ),
       body: Column(
         children: [
@@ -128,11 +151,7 @@ class _HealthManagementScreenState extends State<HealthManagementScreen> {
 
   Widget _buildChartFuture(String title, String period, String type) {
     return FutureBuilder<List<MyRow>>(
-      future: Future.wait([
-        fetchUserHealthData(period, type),
-        _fetchAverageHealthData(period, type),
-      ]).then((List<List<MyRow>> results) =>
-          results.expand((x) => x).toList()), // 두 결과를 하나의 리스트로 결합
+      future: fetchData(period, type),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return CircularProgressIndicator();
@@ -141,20 +160,22 @@ class _HealthManagementScreenState extends State<HealthManagementScreen> {
           return Text('데이터를 가져오는 데 실패했습니다.');
         }
 
-        var series = [
+        var seriesList = <charts.Series<MyRow, String>>[];
+
+        seriesList.add(
           charts.Series<MyRow, String>(
             id: 'Health Data',
             domainFn: (MyRow row, _) => row.category,
             measureFn: (MyRow row, _) => row.value,
+            colorFn: (MyRow row, _) => row.barColor,
             data: snapshot.data!,
           ),
-        ];
+        );
 
-        return _buildChartCard(title, series);
+        return _buildChartCard(title, seriesList);
       },
     );
   }
-
 
   // 차트 카드를 생성하는 위젯
   Widget _buildChartCard(
@@ -175,6 +196,11 @@ class _HealthManagementScreenState extends State<HealthManagementScreen> {
                 seriesList,
                 animate: true,
                 vertical: false,
+                barRendererDecorator: charts.BarLabelDecorator<String>(),
+                domainAxis: const charts.OrdinalAxisSpec(),
+                defaultRenderer: charts.BarRendererConfig(
+                  cornerStrategy: const charts.ConstCornerStrategy(5),
+                ),
               ),
             ),
           ],
@@ -184,10 +210,15 @@ class _HealthManagementScreenState extends State<HealthManagementScreen> {
   }
 }
 
-// 데이터를 나타내는 클래스
 class MyRow {
   final String category;
   final int value;
+  final charts.Color barColor; // charts_flutter 라이브러리의 Color 타입 사용
 
-  MyRow(this.category, this.value);
+  MyRow(this.category, this.value, Color color)
+      : barColor = charts.Color(
+            r: color.red,
+            g: color.green,
+            b: color.blue,
+            a: color.alpha); // Color 타입을 charts.Color로 변환
 }
